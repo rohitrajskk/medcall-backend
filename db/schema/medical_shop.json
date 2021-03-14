@@ -1,0 +1,20 @@
+{
+    "mobile_no": "integer (This will become uinque id for this user)",
+    "user_type": "string(doctor/patient/medical_shop)",
+    "name": "string",
+    "registration_no": "string",
+    "rating": "string",
+    "address": {
+        "city": "string",
+        "pincode": "integer",
+        "google_map": "string",
+        "landmark" : "string"
+    },
+    "service_timing": {
+        "slots": [
+            "start_time": "integer(unix epoch)",
+            "end_time": "integer (unix epoch)"
+        ]
+    },
+    "wallet_balance": "integer"
+}

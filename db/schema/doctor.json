@@ -1,0 +1,25 @@
+{
+    "mobile_no": "integer (This will become uinque id for this user)",
+    "usrd_id" :"system generated ID",
+    "user_type": "string(doctor/patient/medical_shop)",
+    "availibility": "string(enum: inhouse/external)",
+    "name": "string",
+    "degree": "string",
+    "specilisation": "string",
+    "registration_no": "string",
+    "rating": "string",
+    "consultation_fee": "integer",
+    "address": {
+        "city": "string",
+        "pincode": "integer",
+        "google_map": "string",
+        "landmark" : "string"
+        "clinic_name": "string"
+    },
+    "service_timing": {
+        "slots": [
+            "start_time": "integer(unix epoch)",
+            "end_time": "integer (unix epoch)"
+        ]
+    }
+}
