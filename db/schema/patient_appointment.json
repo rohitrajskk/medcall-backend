@@ -1,0 +1,39 @@
+{
+    "mobile_no": "integer (This will become uinque id for this user)",
+    "user_type": "string(doctor/patient/medical_shop)",
+    "name": "string",
+    "age": "integer",
+    "gender": "string(Male/Female/transgender/)",
+    "pre_existing_medical_condition": [
+        "string"
+    ],
+    "parent": "parent_id",
+    "id": "string(system generated uniq ID)",
+    "appointment":
+    {
+        "vitals" : {
+            "body_temperature" : "integer",
+            "pulse_rate" : "integer",
+            "respiration_rate" : "integer",
+            "blood_pressure" : "integer",
+            "blood_sugar" : "integer",
+            "photographs": "Metadata"
+        },
+        "status": "string (enum: active/inactive)",
+        "prescription": {
+            "diagnosis": "string",
+            "medicines": [
+                {
+                    "name": "string",
+                    "frequency": "integer (frequency per day)(doubtful)",
+                    "treatment_period": "integer (no of days)"
+                }
+            ],
+            "referal_doc_id" : "string(While returning this to frontend whole details will be sent)",
+            "consulting_doc_id": "string",
+            "follow_up_date": "integer (unix epoch)",
+            "time": "integer (unix epoch)",
+            "instructions": "string"
+        }
+    }
+}

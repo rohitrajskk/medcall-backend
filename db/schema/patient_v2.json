@@ -1,0 +1,12 @@
+{
+    "mobile_no": "integer (This will become uinque id for this user)",
+    "user_type": "string(doctor/patient/medical_shop)",
+    "name": "string",
+    "parent": "string(system generated unique ID)",
+    "relationship": "string(Self/Relatives)",
+    "age": "integer",
+    "gender": "string(Male/Female/transgender/)",
+    "pre_existing_medical_condition": [
+        "string"
+    ]
+}
