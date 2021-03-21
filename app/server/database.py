@@ -3,6 +3,7 @@ from bson.objectid import ObjectId
 import pymongo
 from datetime import datetime
 from enum import Enum
+import server.daily_co_meeting as meeting
 
 class DocType(Enum):
     FAMILY_USER = 1
@@ -21,7 +22,7 @@ client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_DETAILS)
 
 database = client.patients
 
-patient_collection = database.get_collection("patient_collection6")
+patient_collection = database.get_collection("patient_collection7")
 patient_collection.create_index("parent")
 patient_collection.create_index("doc_type")
 patient_collection.create_index([("mobile_no", pymongo.DESCENDING), ("name", pymongo.DESCENDING), ("doc_type", pymongo.DESCENDING), ("time", pymongo.DESCENDING)], unique=True)
@@ -68,12 +69,22 @@ async def create_appointment(patient_id, vital: dict):
     if patient is None:
         return None
     appointment = dict()
+    appointment["patient"] = patient_helper(patient)
     appointment["vital"] = vital
     appointment["parent"] = patient_id
     appointment["time"] = datetime.now()
     appointment["doc_type"] = DocType.APPOINTMENT.value
     appointment["status"] = AppointmentStatus.CREATED.value
     appointment["is_active"] = True
+    daily_co_meeting= meeting.getmeetings(patient_id=patient_id)
+    appointment["meeting"] = {
+        "doctor_meeting_url": daily_co_meeting["url"],
+        "patient_meeting_url": daily_co_meeting["url"],
+        "meeting_id": daily_co_meeting["id"]
+    }
+    appointment["prescription"] = False
+    appointment["referral"] = False
+    appointment["old_prescription"] = False
     new_appointment = await patient_collection.insert_one(appointment)
     print(new_appointment)
     return new_appointment
