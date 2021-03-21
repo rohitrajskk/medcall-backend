@@ -13,7 +13,7 @@
         "city": "string",
         "pincode": "integer",
         "google_map": "string",
-        "landmark" : "string"
+        "landmark" : "string",
         "clinic_name": "string"
     },
     "service_timing": {
