@@ -12,10 +12,10 @@ class DocType(Enum):
     APPOINTMENT = 3
 
 
-class UserRole(Enum):
-    DOCTOR = 0
-    MEDICALSHOP = 1
-    PATIENT = 2
+class UserRole(str, Enum):
+    doctor = 'doctor'
+    medical_shop = 'medical_shop'
+    patient = 'patient'
 
 
 class AppointmentStatus(Enum):
@@ -49,6 +49,40 @@ doctor_collection.create_index([("mobile_no", pymongo.DESCENDING)], unique=True)
 
 medical_shop_collection = database.get_collection("medical_shop_collection")
 medical_shop_collection.create_index([("mobile_no", pymongo.DESCENDING)], unique=True)
+
+
+user_db = database.get_collection("user_collection")
+user_db.create_index("username", unique=True)
+user_db.create_index("mobile_no", unique=True)
+
+
+async def get_user(username=None, mobile_no=None):
+    if username:
+        user = await user_db.find_one({"username": username})
+        if user:
+            return patient_helper(user)
+        else:
+            None
+    elif mobile_no:
+        user = await user_db.find_one({"mobile_no": mobile_no})
+        if user:
+            return patient_helper(user)
+        else:
+            return None
+
+
+async def create_user(user: dict):
+    new_user = await user_db.insert_one(user)
+    return new_user
+
+
+async def update_user(username: str, user_data: dict):
+    result = await user_db.update_one({"username": username},
+                                             {"$set": {"user_data": user_data}})
+    if result.modified_count == 1:
+        return True
+    else:
+        return False
 
 
 async def get_patient(patient_id=None, mobile_no=None):

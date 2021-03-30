@@ -1,10 +1,16 @@
 from typing import Optional
 from typing import List
-from fastapi import FastAPI
 import server.database as database
 from server.database import DoctorType
+from server.database import UserRole
 from pydantic import BaseModel
-from enum import Enum
+from pydantic.types import constr
+from datetime import datetime, timedelta
+from typing import Optional
+from fastapi import Depends, FastAPI, HTTPException, status, Response
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from jose import JWTError, jwt
+from passlib.context import CryptContext
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.docs import (
     get_redoc_html,
@@ -53,6 +59,92 @@ async def redoc_html():
     )
 
 
+SECRET_KEY = "b420ba2c7ca511ff976a51f38e146f2c9bbf8cfa5d0ff3e9097cee3bb5426772"
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+
+class TokenData(BaseModel):
+    username: Optional[str] = None
+
+
+class User(BaseModel):
+    username: Optional[str]
+    mobile_no: int
+    email: Optional[str] = None
+    full_name: str
+    user_role: UserRole
+    password: constr(min_length=7, max_length=100)
+
+    class Config:
+        use_enum_values = True
+
+
+class UserInDB(User):
+    hashed_password: str
+
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+
+def verify_password(plain_password, hashed_password):
+    return pwd_context.verify(plain_password, hashed_password)
+
+
+def get_password_hash(password):
+    return pwd_context.hash(password)
+
+
+async def authenticate_user(username: str, password: str):
+    user = await database.get_user(username=username)
+    if not user:
+        user = await database.get_user(mobile_no=username)
+        if not user:
+            return False
+        return False
+    if not verify_password(password, user["password"]):
+        return False
+    return user
+
+
+def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
+    to_encode = data.copy()
+    if expires_delta:
+        expire = datetime.utcnow() + expires_delta
+    else:
+        expire = datetime.utcnow() + timedelta(minutes=15)
+    to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
+
+
+async def get_current_user(token: str = Depends(oauth2_scheme)):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username: str = payload.get("sub")
+        if username is None:
+            raise credentials_exception
+        token_data = TokenData(username=username)
+    except JWTError:
+        raise credentials_exception
+    user = await database.get_user(username=token_data.username)
+    # print(user)
+    if user is None:
+        raise credentials_exception
+    return user
+
+
 class Patient(BaseModel):
     name: str
     mobile_no: int
@@ -64,7 +156,6 @@ class Patient(BaseModel):
 
 class Address(BaseModel):
     name: Optional[str]
-    mobile_no: Optional[int]
     pin_code: Optional[int]
     landmark: Optional[str]
     address_str: Optional[str]
@@ -74,7 +165,6 @@ class Address(BaseModel):
 
 
 class Doctor(BaseModel):
-    mobile_no: int
     alternate_mobile_no: Optional[int]
     doctor_name: str
     availability: DoctorType
@@ -93,12 +183,11 @@ class Doctor(BaseModel):
 
 
 class MedicalShop(BaseModel):
-    mobile_no: int
     alternate_mobile_no: Optional[int]
     medical_shop_name: str
     registration_no: Optional[str]
     rating: Optional[float]
-    medical_shop_address: Address
+    medical_shop_address: Optional[Address]
 
 
 class Vital(BaseModel):
@@ -138,7 +227,7 @@ class Prescription(BaseModel):
 
 class Appointment(BaseModel):
     vitals: Vital
-    patient_id: str
+    medical_shop_id: str
 
 
 class ReferralDoctor(BaseModel):
@@ -148,6 +237,78 @@ class ReferralDoctor(BaseModel):
 @app.get("/", tags=["Root"])
 async def read_root():
     return {"message": "Welcome to this fantastic app!"}
+
+
+@app.post("/user", tags=["Root"])
+async def create_user(user: User, response: Response):
+    old_user = await database.get_user(username=user.username, mobile_no=user.mobile_no)
+    if old_user:
+        response.status_code = status.HTTP_409_CONFLICT
+        return {"User already exist"}
+    else:
+        new_user = user.dict()
+        new_user["password"] = get_password_hash(user.password)
+        if user.username is None:
+            new_user["username"] = str(user.mobile_no)
+        new_user_db = await database.create_user(new_user)
+        if new_user_db.inserted_id:
+            return {"New user with id {} added successfully".format(new_user_db.inserted_id)}
+        else:
+            response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
+            return {"Failed to create user please try again..."}
+
+
+@app.put("/user/medical-shop/profile", tags=["Root"])
+async def medical_shop_profile_update(responses: Response, medical_shop: MedicalShop,
+                                      current_user: dict = Depends(get_current_user)):
+    """
+    :param current_user:
+    :type medical_shop: object
+    :param medical_shop:
+    :type responses: object
+    """
+    if current_user["user_role"] is not UserRole.medical_shop.value:
+        responses.status_code = status.HTTP_400_BAD_REQUEST
+        return {"Invalid user role passed for profile update"}
+    update = database.update_user(username=current_user.get("username"), user_data=medical_shop.dict())
+    if not update:
+        responses.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        return {"Unable to update medical shop profile please try again..."}
+
+
+@app.put("/user/doctor/profile", tags=["Root"])
+async def doctor_profile_update(responses: Response, doctor: Doctor,
+                                current_user: dict = Depends(get_current_user)):
+    """
+    :param current_user:
+    :type doctor: object
+    :param doctor:
+    :type responses: object
+    """
+    if current_user["user_role"] is not UserRole.doctor.value:
+        responses.status_code = status.HTTP_400_BAD_REQUEST
+        return {"Invalid user role passed for profile update"}
+    update = await database.update_user(username=current_user.get("username"), user_data=doctor.dict())
+    if not update:
+        responses.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        return {"Unable to update doctor profile please try again..."}
+    return {"Successfully updated doctor profile"}
+
+
+@app.post("/token", response_model=Token, tags=["Root"])
+async def login(form_data: OAuth2PasswordRequestForm = Depends()):
+    user = await authenticate_user(username=form_data.username, password=form_data.password)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": user.get("username")}, expires_delta=access_token_expires
+    )
+    return {"access_token": access_token, "token_type": "bearer", "username": user["username"]}
 
 
 @app.get("/patient/{patient_id}", tags=["Root"])
@@ -187,7 +348,7 @@ async def get_external_doctor():
         return {"message": "No doctors found in the database"}
 
 
-@app.get("/doctor/{doctor_id}", tags=["Root"])
+@app.get("/doctor/external/{doctor_id}", tags=["Root"])
 async def get_doctor(doctor_id):
     doctor = await database.get_doctor(doctor_id=doctor_id)
     if doctor:
@@ -196,7 +357,7 @@ async def get_doctor(doctor_id):
         return {"message": "No doctor with ID; {} found in the database".format(doctor_id)}
 
 
-@app.get("/doctor", tags=["Root"])
+@app.get("/doctor/external", tags=["Root"])
 async def get_doctor(mobile_no: Optional[int] = None):
     doctors = await database.get_doctor(mobile_no=mobile_no)
     if doctors:
@@ -205,7 +366,7 @@ async def get_doctor(mobile_no: Optional[int] = None):
         return {"message": "No doctors found in the database"}
 
 
-@app.post("/doctor", tags=["Root"], )
+@app.post("/doctor/external", tags=["Root"], )
 async def add_doctor(doctor: Doctor):
     new_doctor = await database.add_doctor(doctor.dict())
     return {"doctor_id": str(new_doctor.inserted_id), "message": "Successfully added doctor"}
@@ -256,7 +417,7 @@ async def get_appointments(patient_id):
 
 
 @app.post("/patient/{patient_id}/appointment", tags=["Root"])
-async def create_appointment(patient_id, appointment: Vital):
+async def create_appointment(patient_id, appointment: Appointment):
     new_appointment = await database.create_appointment(patient_id=patient_id, vital=appointment.dict())
     if new_appointment is not None:
         # print(new_appointment)
