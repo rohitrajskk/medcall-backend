@@ -25,20 +25,26 @@ class AppointmentStatus(Enum):
     COMPLETED = 4
 
 
+class DoctorType(Enum):
+    INHOUSE = 1
+    EXTERNAL = 2
+
+
 MONGO_DETAILS = "mongodb://localhost:27017"
 
 client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_DETAILS)
 
 database = client.patients
 
-patient_collection = database.get_collection("patient_collection7")
+patient_collection = database.get_collection("patient_collection8")
 patient_collection.create_index("parent")
 patient_collection.create_index("doc_type")
 patient_collection.create_index(
     [("mobile_no", pymongo.DESCENDING), ("name", pymongo.DESCENDING), ("doc_type", pymongo.DESCENDING),
      ("time", pymongo.DESCENDING)], unique=True)
 
-doctor_collection = database.get_collection("doctor_collection")
+doctor_collection = database.get_collection("doctor_collection1")
+doctor_collection.create_index("availability")
 doctor_collection.create_index([("mobile_no", pymongo.DESCENDING)], unique=True)
 
 medical_shop_collection = database.get_collection("medical_shop_collection")
@@ -102,8 +108,16 @@ async def get_doctor(doctor_id=None, mobile_no=None):
         return doctors
 
 
+async def get_external_doctor(doctor_id=None, mobile_no=None):
+    doctors = []
+    async for doctor in doctor_collection.find({"availability": DoctorType.EXTERNAL.value}):
+        doctors.append(patient_helper(doctor))
+    return doctors
+
+
 async def add_doctor(doctor_data: dict) -> dict:
     doctor_data["user_role"] = UserRole.DOCTOR.value
+    print(doctor_data)
     new_doctor = await doctor_collection.insert_one(doctor_data)
     return new_doctor
 

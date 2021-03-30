@@ -2,6 +2,7 @@ from typing import Optional
 from typing import List
 from fastapi import FastAPI
 import server.database as database
+from server.database import DoctorType
 from pydantic import BaseModel
 from enum import Enum
 from fastapi.middleware.cors import CORSMiddleware
@@ -61,20 +62,15 @@ class Patient(BaseModel):
     pre_existing_medical_condition: List[str] = None
 
 
-class DoctorType(Enum):
-    INHOUSE = 1
-    EXTERNAL = 2
-
-
 class Address(BaseModel):
-    name: str
-    mobile_no: int
-    pin_code: int
-    landmark: str
-    address_str: str
-    city: str
-    state: str
-    google_map: str
+    name: Optional[str]
+    mobile_no: Optional[int]
+    pin_code: Optional[int]
+    landmark: Optional[str]
+    address_str: Optional[str]
+    city: Optional[str]
+    state: Optional[str]
+    google_map: Optional[str]
 
 
 class Doctor(BaseModel):
@@ -87,9 +83,13 @@ class Doctor(BaseModel):
     registration_no: Optional[str]
     consultation_fee: int
     rating: Optional[float]
-    doctor_address: Address
+    doctor_address: Optional[Address]
     service_timing_week: Optional[str]
     service_timing_day: Optional[str]
+    experience: Optional[int]
+
+    class Config:
+        use_enum_values = True
 
 
 class MedicalShop(BaseModel):
@@ -124,14 +124,14 @@ class Medicine(BaseModel):
 class Test(BaseModel):
     test_name: str
     lab_name: Optional[str]
-    lab_address: Address
-    test_comment: str
+    lab_address: Optional[Address]
+    test_comment: Optional[str]
 
 
 class Prescription(BaseModel):
     diagnosis: Optional[str]
     medicines: List[Medicine]
-    test: Optional[Test]
+    test: Optional[List[Test]]
     follow_up_date: Optional[int]
     instructions: Optional[str]
 
@@ -178,6 +178,15 @@ async def add_patients(patient: Patient):
     return {"patient_id": str(new_patient.inserted_id), "message": "Successfully added patient"}
 
 
+@app.get("/doctor/external", tags=["Root"])
+async def get_external_doctor():
+    doctors = await database.get_external_doctor()
+    if doctors:
+        return doctors
+    else:
+        return {"message": "No doctors found in the database"}
+
+
 @app.get("/doctor/{doctor_id}", tags=["Root"])
 async def get_doctor(doctor_id):
     doctor = await database.get_doctor(doctor_id=doctor_id)
@@ -199,7 +208,7 @@ async def get_doctor(mobile_no: Optional[int] = None):
 @app.post("/doctor", tags=["Root"], )
 async def add_doctor(doctor: Doctor):
     new_doctor = await database.add_doctor(doctor.dict())
-    return {"doctor_id": str(doctor.inserted_id), "message": "Successfully added doctor"}
+    return {"doctor_id": str(new_doctor.inserted_id), "message": "Successfully added doctor"}
 
 
 @app.get("/medical-shop/{shop_id}", tags=["Root"])
@@ -223,7 +232,7 @@ async def get_medical_shop(mobile_no: Optional[int] = None):
 @app.post("/medical-shop", tags=["Root"], )
 async def add_medical_shop(medical_shop: MedicalShop):
     new_medical_shop = await database.add_medical_shop(medical_shop.dict())
-    return {"doctor_id": str(new_medical_shop.inserted_id), "message": "Successfully added medicla shop"}
+    return {"doctor_id": str(new_medical_shop.inserted_id), "message": "Successfully added medical shop"}
 
 
 @app.get("/patient/{patient_id}/appointment/{appointment_id}", tags=["Root"])
@@ -259,8 +268,8 @@ async def create_appointment(patient_id, appointment: Vital):
 @app.post("/patient/{patient_id}/appointment/{appointment_id}/prescription", tags=["Root"])
 async def add_prescription(patient_id, appointment_id, prescription: Prescription):
     # return {"message": "Return patients"}
-    new_prescription = await database.add_appointment_referral(referral_doctor=prescription.dict(),
-                                                               patient_id=patient_id, appointment_id=appointment_id)
+    new_prescription = await database.add_appointment_prescription(prescription=prescription.dict(),
+                                                                   patient_id=patient_id, appointment_id=appointment_id)
     if new_prescription:
         return {"_id": appointment_id, "message": "Successfully updated prescription"}
     else:
@@ -294,7 +303,8 @@ async def get_referral(patient_id, appointment_id):
     if appointment is None:
         return {"message": "No appointment found with ID: {} in the database".format(appointment_id)}
     elif appointment.get("referral"):
-        return appointment.get("referral")
+        doctor = await database.get_doctor(doctor_id=appointment.get("referral"))
+        return doctor
     else:
         return {"message": "No referral found in the database"}
 
