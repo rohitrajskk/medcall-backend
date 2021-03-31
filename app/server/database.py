@@ -18,11 +18,11 @@ class UserRole(str, Enum):
     patient = 'patient'
 
 
-class AppointmentStatus(Enum):
-    CREATED = 1
-    IN_QUEUE = 2
-    VIDEO_CALL = 3
-    COMPLETED = 4
+class AppointmentStatus(str, Enum):
+    CREATED = "created"
+    IN_QUEUE = 'in_queue'
+    VIDEO_CALL = 'video_call'
+    COMPLETED = 'completed'
 
 
 class DoctorType(Enum):
@@ -36,7 +36,7 @@ client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_DETAILS)
 
 database = client.patients
 
-patient_collection = database.get_collection("patient_collection8")
+patient_collection = database.get_collection("patient_collection9")
 patient_collection.create_index("parent")
 patient_collection.create_index("doc_type")
 patient_collection.create_index(
@@ -110,16 +110,16 @@ async def add_patient(patient_data: dict) -> dict:
     # print(parent_user)
     if not parent_user:
         patient = await patient_collection.insert_one(
-            {"mobile_no": patient_data["mobile_no"], "doc_type": DocType.FAMILY_USER.value, "user_role": UserRole.PATIENT.value})
+            {"mobile_no": patient_data["mobile_no"], "doc_type": DocType.FAMILY_USER.value, "user_role": UserRole.patient.value})
         # print(patient)
         patient_data["parent"] = str(patient.inserted_id)
         patient_data["doc_type"] = DocType.PATIENT_USER.value
-        patient_data["user_role"] = UserRole.PATIENT.value
+        patient_data["user_role"] = UserRole.patient.value
         new_patient = await patient_collection.insert_one(patient_data)
     else:
         patient_data["parent"] = str(parent_user["_id"])
         patient_data["doc_type"] = DocType.PATIENT_USER.value
-        patient_data["user_role"] = UserRole.PATIENT.value
+        patient_data["user_role"] = UserRole.patient.value
         new_patient = await patient_collection.insert_one(patient_data)
     return new_patient
 
@@ -150,7 +150,7 @@ async def get_external_doctor(doctor_id=None, mobile_no=None):
 
 
 async def add_doctor(doctor_data: dict) -> dict:
-    doctor_data["user_role"] = UserRole.DOCTOR.value
+    doctor_data["user_role"] = UserRole.doctor.value
     print(doctor_data)
     new_doctor = await doctor_collection.insert_one(doctor_data)
     return new_doctor
@@ -175,7 +175,7 @@ async def get_medical_shop(shop_id=None, mobile_no=None):
 
 
 async def add_medical_shop(shop_data: dict) -> dict:
-    shop_data["user_role"] = UserRole.MEDICALSHOP.value
+    shop_data["user_role"] = UserRole.medical_shop.value
     new_shop = await medical_shop_collection.insert_one(shop_data)
     return new_shop
 
@@ -250,6 +250,23 @@ async def add_appointment_referral(referral_doctor: dict, patient_id=None, appoi
             return None
 
 
+async def udate_appointment_status(status: AppointmentStatus, patient_id=None, appointment_id=None):
+    """
+    :type status: object
+    :param appointment_id:
+    :param patient_id:
+    """
+    if appointment_id is None:
+        return None
+    else:
+        result = await patient_collection.update_one({"_id": ObjectId(appointment_id)},
+                                                     {"$set": {"status": status}})
+        if result.modified_count == 1:
+            return appointment_id
+        else:
+            return None
+
+
 async def active_appointment():
     appointments = []
     async for patient in patient_collection.find({"doc_type": 3, "status": {"$ne": AppointmentStatus.COMPLETED.value}}):
@@ -267,6 +284,4 @@ async def inactive_appointment():
 def patient_helper(patient) -> dict:
     # print(patient)
     patient["_id"] = str(patient["_id"])
-    if patient.get("user_role"):
-        patient["user_role"] = UserRole(patient.get("user_role")).name
     return patient

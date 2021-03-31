@@ -3,6 +3,7 @@ from typing import List
 import server.database as database
 from server.database import DoctorType
 from server.database import UserRole
+from server.database import AppointmentStatus
 from pydantic import BaseModel
 from pydantic.types import constr
 from datetime import datetime, timedelta
@@ -450,8 +451,8 @@ async def get_prescription(patient_id, appointment_id):
 
 @app.post("/patient/{patient_id}/appointment/{appointment_id}/referral", tags=["Root"])
 async def add_referral(patient_id, appointment_id, referral: ReferralDoctor):
-    new_referral = await database.add_appointment_referral(patient_id=patient_id, appointment_id=appointment_id,
-                                                           referral_doctor=referral.dict())
+    new_referral = await database.add_appointment_referral(status=referral.dict(), patient_id=patient_id,
+                                                           appointment_id=appointment_id)
     if new_referral:
         return {"_id": appointment_id, "message": "Successfully updated referral"}
     else:
@@ -468,6 +469,27 @@ async def get_referral(patient_id, appointment_id):
         return doctor
     else:
         return {"message": "No referral found in the database"}
+
+
+@app.put("/patient/{patient_id}/appointment/{appointment_id}/status", tags=["Root"])
+async def add_referral(patient_id, appointment_id, appointment_status: AppointmentStatus):
+    new_status = await database.udate_appointment_status(patient_id=patient_id, appointment_id=appointment_id,
+                                                         status=appointment_status)
+    if new_status:
+        return {"_id": appointment_id, "message": "Successfully updated appointment status"}
+    else:
+        return {"message": "No appointment found with ID: {} in the database".format(appointment_id)}
+
+
+@app.get("/patient/{patient_id}/appointment/{appointment_id}/status", tags=["Root"])
+async def get_referral(patient_id, appointment_id):
+    appointment = await database.get_appointment(patient_id=patient_id, appointment_id=appointment_id)
+    if appointment is None:
+        return {"message": "No appointment found with ID: {} in the database".format(appointment_id)}
+    elif appointment.get("status"):
+        return {"appointment_id": appointment_id, "status": appointment.get("status")}
+    else:
+        return {"message": "No status found in the database"}
 
 
 @app.get("/active/appointment", tags=["Root"])
