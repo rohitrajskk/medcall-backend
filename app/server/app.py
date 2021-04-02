@@ -19,6 +19,25 @@ from fastapi.openapi.docs import (
     get_swagger_ui_oauth2_redirect_html,
 )
 from fastapi.staticfiles import StaticFiles
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+
+
+class ConnectionManager:
+    def __init__(self):
+        self.active_connections: dict()
+
+    async def connect(self, websocket: WebSocket, connection_id: str):
+        await websocket.accept()
+        self.active_connections[connection_id] = websocket
+
+    def disconnect(self, connection_id: str):
+        self.active_connections.pop(connection_id)
+
+    async def send_json(self, message: dict, connection_id: str):
+        await self.active_connections[connection_id].send_json(message)
+
+
+manager = ConnectionManager()
 
 origins = [
     "*"
@@ -251,12 +270,27 @@ async def create_user(user: User, response: Response):
         new_user["password"] = get_password_hash(user.password)
         if user.username is None:
             new_user["username"] = str(user.mobile_no)
+            user.username = str(user.mobile_no)
+        if user.user_role is UserRole.doctor.value:
+            new_user["medical_shop_service_count"] = 0
+        elif user.user_role is UserRole.medical_shop.value:
+            doctor = await database.assign_doctor()
+            if not doctor:
+                doctor_assignment_failed = True
+            else:
+                new_user["assigned_doctor"] = doctor
         new_user_db = await database.create_user(new_user)
         if new_user_db.inserted_id:
             return {"New user with id {} added successfully".format(new_user_db.inserted_id)}
+            # Assign a doctor
         else:
             response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
             return {"Failed to create user please try again..."}
+
+
+@app.get("/user", tags=["Root"])
+async def create_user(current_user: dict = Depends(get_current_user)):
+    return current_user
 
 
 @app.put("/user/medical-shop/profile", tags=["Root"])
@@ -419,9 +453,15 @@ async def get_appointments(patient_id):
 
 @app.post("/patient/{patient_id}/appointment", tags=["Root"])
 async def create_appointment(patient_id, appointment: Appointment):
-    new_appointment = await database.create_appointment(patient_id=patient_id, vital=appointment.dict())
+    new_appointment = await database.create_appointment(patient_id=patient_id, appointment=appointment.dict())
     if new_appointment is not None:
         # print(new_appointment)
+        active_appointment = await database.active_appointment()
+        medical_shop_user = await database.get_user(username=appointment.medical_shop_id)
+        try:
+            await manager.send_json(active_appointment, medical_shop_user)
+        except WebSocketDisconnect:
+            manager.disconnect(medical_shop_user)
         return {"appointment_id": str(new_appointment.inserted_id), "message": "Successfully added patient"}
     else:
         return {"message": "Parent ID: {} not found in database".format(patient_id)}
@@ -472,17 +512,35 @@ async def get_referral(patient_id, appointment_id):
 
 
 @app.put("/patient/{patient_id}/appointment/{appointment_id}/status", tags=["Root"])
-async def add_referral(patient_id, appointment_id, appointment_status: AppointmentStatus):
+async def update_status(patient_id, appointment_id, appointment_status: AppointmentStatus):
     new_status = await database.udate_appointment_status(patient_id=patient_id, appointment_id=appointment_id,
                                                          status=appointment_status)
     if new_status:
+        if appointment_status is AppointmentStatus.VIDEO_CALL.value:
+            appointment = await database.get_appointment(appointment_id=appointment_id)
+            medical_shop_id = appointment["medical_shop_id"]
+            try:
+                await manager.send_json({"_id": appointment_id, "status": AppointmentStatus.VIDEO_CALL.value},
+                                        medical_shop_id)
+            except WebSocketDisconnect:
+                manager.disconnect(medical_shop_id)
+        if appointment_status is AppointmentStatus.COMPLETED.value:
+            appointment = await database.get_appointment(appointment_id=appointment_id)
+            medical_shop_id = appointment["medical_shop_id"]
+            try:
+                await manager.send_json(
+                    {"_id": appointment_id, "status": AppointmentStatus.COMPLETED.value},
+                    medical_shop_id)
+            except WebSocketDisconnect:
+                manager.disconnect(medical_shop_id)
+
         return {"_id": appointment_id, "message": "Successfully updated appointment status"}
     else:
         return {"message": "No appointment found with ID: {} in the database".format(appointment_id)}
 
 
 @app.get("/patient/{patient_id}/appointment/{appointment_id}/status", tags=["Root"])
-async def get_referral(patient_id, appointment_id):
+async def get_status(patient_id, appointment_id):
     appointment = await database.get_appointment(patient_id=patient_id, appointment_id=appointment_id)
     if appointment is None:
         return {"message": "No appointment found with ID: {} in the database".format(appointment_id)}
@@ -510,3 +568,8 @@ async def get_appointments():
         return appointment
     else:
         return {"message": "No appointment found in the database"}
+
+
+@app.websocket("/ws/{username}")
+async def websocket_endpoint(websocket: WebSocket, username: str):
+    await manager.connect(websocket, username)
