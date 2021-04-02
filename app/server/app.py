@@ -464,7 +464,7 @@ async def get_prescription(patient_id, appointment_id):
 
 @app.post("/patient/{patient_id}/appointment/{appointment_id}/referral", tags=["Root"])
 async def add_referral(patient_id, appointment_id, referral: ReferralDoctor):
-    new_referral = await database.add_appointment_referral(status=referral.dict(), patient_id=patient_id,
+    new_referral = await database.add_appointment_referral(referral_doctor=referral.dict(), patient_id=patient_id,
                                                            appointment_id=appointment_id)
     if new_referral:
         return {"_id": appointment_id, "message": "Successfully updated referral"}
@@ -565,8 +565,5 @@ async def get_medicine(medicine: Medicine):
 @app.websocket("/ws/{username}")
 async def websocket_endpoint(websocket: WebSocket, username: str):
     await manager.connect(websocket, username)
-    try:
-        while True:
-            data = await websocket.receive_text()
-    except WebSocketDisconnect:
-        manager.disconnect(websocket)
+    while True:
+        data = await websocket.receive_text()
