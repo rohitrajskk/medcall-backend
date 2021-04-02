@@ -428,10 +428,9 @@ async def create_appointment(patient_id, appointment: Appointment):
     new_appointment = await database.create_appointment(patient_id=patient_id, appointment=appointment.dict())
     if new_appointment is not None:
         # print(new_appointment)
-        active_appointment = await database.active_appointment()
         medical_shop_user = await database.get_user(username=appointment.medical_shop_id)
         try:
-            await manager.send_json(active_appointment, medical_shop_user)
+            await manager.send_json({"appointment_updated": True}, medical_shop_user["assigned_doctor"])
         except WebSocketDisconnect:
             manager.disconnect(medical_shop_user)
         return {"appointment_id": str(new_appointment.inserted_id), "message": "Successfully added patient"}
@@ -498,13 +497,13 @@ async def update_status(patient_id, appointment_id, appointment_status: Appointm
                                         medical_shop_id)
             except WebSocketDisconnect:
                 manager.disconnect(medical_shop_id)
-        if appointment_status is AppointmentStatus.COMPLETED.value:
+        if appointment_status is AppointmentStatus.COMPLETED:
             appointment = await database.get_appointment(appointment_id=appointment_id)
             medical_shop_id = appointment["medical_shop_id"]
             try:
                 await manager.send_json({"patient_name": appointment["patient"]["name"],
                                          "patient_id": patient_id, "appointment_id": appointment_id,
-                                         "status": AppointmentStatus.VIDEO_CALL.value},
+                                         "status": AppointmentStatus.COMPLETED.value},
                                         medical_shop_id)
             except WebSocketDisconnect:
                 manager.disconnect(medical_shop_id)
