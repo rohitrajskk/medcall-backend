@@ -50,10 +50,10 @@ doctor_collection.create_index([("mobile_no", pymongo.DESCENDING)], unique=True)
 medical_shop_collection = database.get_collection("medical_shop_collection")
 medical_shop_collection.create_index([("mobile_no", pymongo.DESCENDING)], unique=True)
 
-
-user_db = database.get_collection("user_collection")
+user_db = database.get_collection("user_collection1")
 user_db.create_index("username", unique=True)
 user_db.create_index("mobile_no", unique=True)
+user_db.create_index("user_role")
 
 
 async def get_user(username=None, mobile_no=None):
@@ -78,11 +78,27 @@ async def create_user(user: dict):
 
 async def update_user(username: str, user_data: dict):
     result = await user_db.update_one({"username": username},
-                                             {"$set": {"user_data": user_data}})
+                                      {"$set": {"user_data": user_data}})
     if result.modified_count == 1:
         return True
     else:
         return False
+
+
+async def assign_doctor():
+    doctors = user_db.find({"user_role": UserRole.doctor.value}).sort("medical_shop_service_count", 1).limit(1)
+    if not doctors:
+        return None
+    else:
+        doctor = (await doctors.to_list(length=1))[0]
+        print(doctor)
+        result = await user_db.update_one({"_id": doctor["_id"]},
+                                          {"$set": {
+                                              "medical_shop_service_count": doctor["medical_shop_service_count"] + 1}})
+        if result.modified_count == 1:
+            return doctor["username"]
+        else:
+            return None
 
 
 async def get_patient(patient_id=None, mobile_no=None):
@@ -110,7 +126,8 @@ async def add_patient(patient_data: dict) -> dict:
     # print(parent_user)
     if not parent_user:
         patient = await patient_collection.insert_one(
-            {"mobile_no": patient_data["mobile_no"], "doc_type": DocType.FAMILY_USER.value, "user_role": UserRole.patient.value})
+            {"mobile_no": patient_data["mobile_no"], "doc_type": DocType.FAMILY_USER.value,
+             "user_role": UserRole.patient.value})
         # print(patient)
         patient_data["parent"] = str(patient.inserted_id)
         patient_data["doc_type"] = DocType.PATIENT_USER.value
@@ -180,13 +197,14 @@ async def add_medical_shop(shop_data: dict) -> dict:
     return new_shop
 
 
-async def create_appointment(patient_id, vital: dict):
+async def create_appointment(patient_id, in_app: dict):
     patient = await patient_collection.find_one({"_id": ObjectId(patient_id)})
     if patient is None:
         return None
     appointment = dict()
     appointment["patient"] = patient_helper(patient)
-    appointment["vital"] = vital
+    appointment["vital"] = in_app["vital"]
+    appointment["medical_shop_id"] = in_app["medical_shop_id"]
     appointment["parent"] = patient_id
     appointment["time"] = datetime.now()
     appointment["doc_type"] = DocType.APPOINTMENT.value
