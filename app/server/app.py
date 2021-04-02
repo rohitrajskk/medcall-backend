@@ -29,9 +29,11 @@ class ConnectionManager:
     async def connect(self, websocket: WebSocket, connection_id: str):
         await websocket.accept()
         self.active_connections[connection_id] = websocket
+        print(self.active_connections)
 
     def disconnect(self, connection_id: str):
         self.active_connections.pop(connection_id)
+        print(self.active_connections)
 
     async def send_json(self, message: dict, connection_id: str):
         await self.active_connections[connection_id].send_json(message)
@@ -425,7 +427,7 @@ async def get_appointments(patient_id):
 
 @app.post("/patient/{patient_id}/appointment", tags=["Root"])
 async def create_appointment(patient_id, appointment: Appointment):
-    new_appointment = await database.create_appointment(patient_id=patient_id, appointment=appointment.dict())
+    new_appointment = await database.create_appointment(patient_id=patient_id, in_app=appointment.dict())
     if new_appointment is not None:
         # print(new_appointment)
         medical_shop_user = await database.get_user(username=appointment.medical_shop_id)
@@ -484,11 +486,11 @@ async def get_referral(patient_id, appointment_id):
 
 @app.put("/patient/{patient_id}/appointment/{appointment_id}/status", tags=["Root"])
 async def update_status(patient_id, appointment_id, appointment_status: AppointmentStatus):
-    new_status = await database.udate_appointment_status(patient_id=patient_id, appointment_id=appointment_id,
-                                                         status=appointment_status)
+    new_status = await database.update_appointment_status(patient_id=patient_id, appointment_id=appointment_id,
+                                                          status=appointment_status)
     if new_status:
         if appointment_status is AppointmentStatus.VIDEO_CALL:
-            appointment = await database.get_appointment(appointment_id=appointment_id)
+            appointment = await database.get_appointment(patient_id=patient_id, appointment_id=appointment_id)
             medical_shop_id = appointment["medical_shop_id"]
             try:
                 await manager.send_json({"patient_name": appointment["patient"]["name"],
@@ -498,7 +500,7 @@ async def update_status(patient_id, appointment_id, appointment_status: Appointm
             except WebSocketDisconnect:
                 manager.disconnect(medical_shop_id)
         if appointment_status is AppointmentStatus.COMPLETED:
-            appointment = await database.get_appointment(appointment_id=appointment_id)
+            appointment = await database.get_appointment(patient_id=patient_id, appointment_id=appointment_id)
             medical_shop_id = appointment["medical_shop_id"]
             try:
                 await manager.send_json({"patient_name": appointment["patient"]["name"],
@@ -563,3 +565,8 @@ async def get_medicine(medicine: Medicine):
 @app.websocket("/ws/{username}")
 async def websocket_endpoint(websocket: WebSocket, username: str):
     await manager.connect(websocket, username)
+    try:
+        while True:
+            data = await websocket.receive_text()
+    except WebSocketDisconnect:
+        manager.disconnect(websocket)

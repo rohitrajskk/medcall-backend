@@ -3,12 +3,13 @@ import datetime
 import json
 import requests
 
+token_brearer = '6d3b9853bc75946f24545771453a32f920624189c3ee62f526e1a69857821965'
 
-token_brearer= '46c0ac2595e623b042ac1dd8af209f21390b18f42dd06d791f3551920d0b0e3a'
-
-#TODO: Make a new user on zoom and change credentials
+# TODO: Make a new user on zoom and change credentials
 url = 'https://api.daily.co/v1/rooms'
-def getmeetings(doc_id: str=None, patient_id: str=None):
+
+
+def getmeetings(doc_id: str = None, patient_id: str = None):
     headers = {
         'authorization': 'Bearer {}'.format(token_brearer),
         'content-type': 'application/json'
@@ -36,4 +37,3 @@ def getmeetings(doc_id: str=None, patient_id: str=None):
     response = requests.post(url, headers=headers)
     print(response)
     return response.json()
-
