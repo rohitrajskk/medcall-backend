@@ -87,6 +87,8 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 class Token(BaseModel):
     access_token: str
     token_type: str
+    username: str
+    role: UserRole
 
 
 class TokenData(BaseModel):
@@ -343,7 +345,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     access_token = create_access_token(
         data={"sub": user.get("username")}, expires_delta=access_token_expires
     )
-    return {"access_token": access_token, "token_type": "bearer", "username": user["username"]}
+    return {"access_token": access_token, "token_type": "bearer", "username": user["username"], "role": user.get("user_role")}
 
 
 @app.get("/patient/{patient_id}", tags=["Root"])
