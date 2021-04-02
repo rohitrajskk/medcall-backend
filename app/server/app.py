@@ -24,7 +24,7 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 
 class ConnectionManager:
     def __init__(self):
-        self.active_connections: dict()
+        self.active_connections = dict()
 
     async def connect(self, websocket: WebSocket, connection_id: str):
         await websocket.accept()
@@ -189,7 +189,6 @@ class Address(BaseModel):
 class Doctor(BaseModel):
     alternate_mobile_no: Optional[int]
     doctor_name: str
-    availability: DoctorType
     degree: str
     specialisation: str
     registration_no: Optional[str]
@@ -202,6 +201,10 @@ class Doctor(BaseModel):
 
     class Config:
         use_enum_values = True
+
+
+class ExternalDoctor(Doctor):
+    mobile_no: int
 
 
 class MedicalShop(BaseModel):
@@ -223,6 +226,14 @@ class Vital(BaseModel):
 
 class Medicine(BaseModel):
     medicine_name: str
+    brand_name: Optional[List[str]]
+    medicine_mg: Optional[List[str]]
+    medicine_type: str
+    medicine_uses: Optional[str]
+
+
+class MedicineTreatment(BaseModel):
+    medicine_name: str
     brand_name: str
     medicine_mg: str
     treatment_gap_day: Optional[int]
@@ -241,7 +252,7 @@ class Test(BaseModel):
 
 class Prescription(BaseModel):
     diagnosis: Optional[str]
-    medicines: List[Medicine]
+    medicines: List[MedicineTreatment]
     test: Optional[List[Test]]
     follow_up_date: Optional[int]
     instructions: Optional[str]
@@ -345,7 +356,8 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     access_token = create_access_token(
         data={"sub": user.get("username")}, expires_delta=access_token_expires
     )
-    return {"access_token": access_token, "token_type": "bearer", "username": user["username"], "role": user.get("user_role")}
+    return {"access_token": access_token, "token_type": "bearer", "username": user["username"],
+            "role": user.get("user_role")}
 
 
 @app.get("/patient/{patient_id}", tags=["Root"])
@@ -361,9 +373,7 @@ async def get_patients(patient_id):
 
 @app.get("/patient", tags=["Root"])
 async def get_patients(mobile_no: Optional[int] = None):
-    # return {"message": "Return patients"}
     patients = await database.get_patient(mobile_no=mobile_no)
-    # print(patients)
     if patients:
         return patients
     else:
@@ -377,26 +387,10 @@ async def add_patients(patient: Patient):
 
 
 @app.get("/doctor/external", tags=["Root"])
-async def get_external_doctor():
-    doctors = await database.get_external_doctor()
-    if doctors:
-        return doctors
-    else:
-        return {"message": "No doctors found in the database"}
-
-
-@app.get("/doctor/external/{doctor_id}", tags=["Root"])
-async def get_doctor(doctor_id):
-    doctor = await database.get_doctor(doctor_id=doctor_id)
-    if doctor:
-        return doctor
-    else:
-        return {"message": "No doctor with ID; {} found in the database".format(doctor_id)}
-
-
-@app.get("/doctor/external", tags=["Root"])
-async def get_doctor(mobile_no: Optional[int] = None):
-    doctors = await database.get_doctor(mobile_no=mobile_no)
+async def get_external_doctor(mobile_no: Optional[int] = None, specialisation: Optional[str] = None,
+                              doctor_id: Optional[str] = None):
+    doctors = await database.get_external_doctor(mobile_no=mobile_no, specialisation=specialisation,
+                                                 doctor_id=doctor_id)
     if doctors:
         return doctors
     else:
@@ -404,33 +398,9 @@ async def get_doctor(mobile_no: Optional[int] = None):
 
 
 @app.post("/doctor/external", tags=["Root"], )
-async def add_doctor(doctor: Doctor):
+async def add_doctor(doctor: ExternalDoctor):
     new_doctor = await database.add_doctor(doctor.dict())
     return {"doctor_id": str(new_doctor.inserted_id), "message": "Successfully added doctor"}
-
-
-@app.get("/medical-shop/{shop_id}", tags=["Root"])
-async def get_medical_shop(shop_id):
-    medical_shop = await database.get_medical_shop(shop_id=shop_id)
-    if medical_shop:
-        return medical_shop
-    else:
-        return {"message": "No medical shop with ID; {} found in the database".format(shop_id)}
-
-
-@app.get("/medical-shop", tags=["Root"])
-async def get_medical_shop(mobile_no: Optional[int] = None):
-    medical_shop = await database.get_medical_shop(mobile_no=mobile_no)
-    if medical_shop:
-        return medical_shop
-    else:
-        return {"message": "No medical shop found in the database"}
-
-
-@app.post("/medical-shop", tags=["Root"], )
-async def add_medical_shop(medical_shop: MedicalShop):
-    new_medical_shop = await database.add_medical_shop(medical_shop.dict())
-    return {"doctor_id": str(new_medical_shop.inserted_id), "message": "Successfully added medical shop"}
 
 
 @app.get("/patient/{patient_id}/appointment/{appointment_id}", tags=["Root"])
@@ -507,7 +477,7 @@ async def get_referral(patient_id, appointment_id):
     if appointment is None:
         return {"message": "No appointment found with ID: {} in the database".format(appointment_id)}
     elif appointment.get("referral"):
-        doctor = await database.get_doctor(doctor_id=appointment.get("referral"))
+        doctor = await database.get_external_doctor(doctor_id=appointment.get("referral"))
         return doctor
     else:
         return {"message": "No referral found in the database"}
@@ -518,11 +488,13 @@ async def update_status(patient_id, appointment_id, appointment_status: Appointm
     new_status = await database.udate_appointment_status(patient_id=patient_id, appointment_id=appointment_id,
                                                          status=appointment_status)
     if new_status:
-        if appointment_status is AppointmentStatus.VIDEO_CALL.value:
+        if appointment_status is AppointmentStatus.VIDEO_CALL:
             appointment = await database.get_appointment(appointment_id=appointment_id)
             medical_shop_id = appointment["medical_shop_id"]
             try:
-                await manager.send_json({"_id": appointment_id, "status": AppointmentStatus.VIDEO_CALL.value},
+                await manager.send_json({"patient_name": appointment["patient"]["name"],
+                                         "patient_id": patient_id, "appointment_id": appointment_id,
+                                         "status": AppointmentStatus.VIDEO_CALL.value},
                                         medical_shop_id)
             except WebSocketDisconnect:
                 manager.disconnect(medical_shop_id)
@@ -530,9 +502,10 @@ async def update_status(patient_id, appointment_id, appointment_status: Appointm
             appointment = await database.get_appointment(appointment_id=appointment_id)
             medical_shop_id = appointment["medical_shop_id"]
             try:
-                await manager.send_json(
-                    {"_id": appointment_id, "status": AppointmentStatus.COMPLETED.value},
-                    medical_shop_id)
+                await manager.send_json({"patient_name": appointment["patient"]["name"],
+                                         "patient_id": patient_id, "appointment_id": appointment_id,
+                                         "status": AppointmentStatus.VIDEO_CALL.value},
+                                        medical_shop_id)
             except WebSocketDisconnect:
                 manager.disconnect(medical_shop_id)
 
@@ -554,7 +527,6 @@ async def get_status(patient_id, appointment_id):
 
 @app.get("/active/appointment", tags=["Root"])
 async def get_appointments():
-    # return {"message": "Return patients"}
     appointment = await database.active_appointment()
     if appointment:
         return appointment
@@ -564,12 +536,29 @@ async def get_appointments():
 
 @app.get("/inactive/appointment", tags=["Root"])
 async def get_appointments():
-    # return {"message": "Return patients"}
     appointment = await database.inactive_appointment()
     if appointment:
         return appointment
     else:
         return {"message": "No appointment found in the database"}
+
+
+@app.get("/medicine", tags=["Root"])
+async def get_medicine(medicine_name: Optional[str] = None, medicine_id: Optional[str] = None):
+    medicines = await database.get_medicine(medicine_name=medicine_name, medicine_id=medicine_id)
+    if medicines:
+        return medicines
+    else:
+        return {"message": "No medicine found in the database"}
+
+
+@app.post("/medicine", tags=["Root"])
+async def get_medicine(medicine: Medicine):
+    medicines = await database.add_medicine(medicine.dict())
+    if medicines:
+        return {"Added medicine with id: {}".format(medicines.inserted_id)}
+    else:
+        return {"message": "Medicine add failed"}
 
 
 @app.websocket("/ws/{username}")
