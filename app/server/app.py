@@ -36,7 +36,8 @@ class ConnectionManager:
         print(self.active_connections)
 
     async def send_json(self, message: dict, connection_id: str):
-        await self.active_connections[connection_id].send_json(message)
+        if self.active_connections.get(connection_id) is not None:
+            await self.active_connections[connection_id].send_json(message)
 
 
 manager = ConnectionManager()
