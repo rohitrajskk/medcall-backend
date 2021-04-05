@@ -1,0 +1,523 @@
+[
+  {
+    "medicine_name": "Aspirin",
+    "brand_name": ["Ecosprin", "Asprin", "Loprin"],
+    "medicine_variety": ["75mg", "150mg", "325mg"],
+    "medicine_type": "Tablet",
+    "prescription_required": true,
+    "medicine_uses": "Aspirin is used for heart attack. It decreases the chances of having another heart attack or stroke from a disease related to your heart or blood vessels."
+  },
+  {
+    "medicine_name": "Atropine (drops)",
+    "brand_name": ["Atropine 1% Eye Drop", "Atro Eye Drop"],
+    "medicine_variety": ["1%w/w"],
+    "medicine_type": "Drops",
+    "prescription_required": true,
+    "medicine_uses": "Atropine is used in the treatment of bradycardia - slow heart rate"
+  },
+  {
+    "medicine_name": "Atropine (injection)",
+    "brand_name": ["Atropine injection"],
+    "medicine_variety": ["1ml"],
+    "medicine_type": "Injection",
+    "prescription_required": true,
+    "medicine_uses": "Atropine is used in the treatment of bradycardia - slow heart rate"
+  },
+  {
+    "medicine_name": "Benzyle Benzoate",
+    "medicine_type": "Creme",
+    "medicine_uses": "Benzyl Benzoate is used in the treatment of scabies. It is an antiparasitic medicines"
+  },
+  {
+    "medicine_name": "Lindane (lotion)",
+    "brand_name": ["Gamascab Lotion","Scaboma Lotion"],
+    "medicine_variety": ["1% w/v"],
+    "medicine_type": "Lotion",
+    "prescription_required": false,
+    "medicine_uses": "Lindane is used in the treatment of scabies and head lice."
+  },
+  {
+    "medicine_name": "Lindane (soap)",
+    "brand_name": ["Scaboma soap"],
+    "medicine_type": "Soap",
+    "prescription_required": false,
+    "medicine_uses": "Lindane is used in the treatment of scabies and head lice."
+  },
+  {
+    "medicine_name": "Lindane (creme)",
+    "brand_name": ["Gamascab 1% Cream"],
+    "medicine_variety": ["1%"],
+    "medicine_type": "Creme",
+    "prescription_required": false,
+    "medicine_uses": "Lindane is used in the treatment of scabies and head lice."
+  },
+  {
+    "medicine_name": "Calamine (lotion)",
+    "brand_name": ["Cutivera", "Notacalamine", "Calafair"],
+    "medicine_type": "Lotion",
+    "prescription_required": false,
+    "medicine_uses": "Calamine is used in the treatment of dermatitis and itching. Cools itching - its soothing"
+  },
+  {
+    "medicine_name": "Chlorhexidine Gluconate",
+    "brand_name": ["Hexidine Mouthwash"],
+    "medicine_variety": ["0.2% w/v"],
+    "medicine_type": "Mouth Wash",
+    "prescription_required": false,
+    "medicine_uses": "Chlorhexidine Gluconate is used in the treatment of inflammation of gums."
+  },
+  {
+    "medicine_name": "Chloroquine",
+    "brand_name": ["Lariago", "Resochin", "Emquin"],
+    "medicine_variety": ["80mg", "250mg", "500mg"],
+    "medicine_type": "Tablet",
+    "prescription_required": true,
+    "medicine_uses": "multi-purpose drug - artheritis, malaria"
+  },
+  {
+    "medicine_name": "Chloroquine",
+    "brand_name": ["Lariago", "Resochin", "Emquin"],
+    "medicine_variety": ["50mg", "100mg"],
+    "medicine_type": "Suspension",
+    "prescription_required": true,
+    "medicine_uses": "multi-purpose drug - artheritis, malaria"
+  },
+  {
+    "medicine_name": "Chloroquine",
+    "brand_name": ["Lariago, Resochin", "Emquin"],
+    "medicine_variety": ["64.5mg", "40mg"],
+    "medicine_type": "Injection",
+    "prescription_required": true,
+    "medicine_uses": "multi-purpose drug - artheritis, malaria"
+  },
+  {
+    "medicine_name": "Chlorpheniramine Maleate",
+    "brand_name": ["Hista 12", "Alidex", "Rolaramine"],
+    "medicine_variety": ["2mg"],
+    "medicine_type": "Tablet",
+    "prescription_required": true,
+    "medicine_uses": "Chlorpheniramine Maleate is used in the treatment of allergic conditions - pollen, animal dander, house dust etc"
+  },
+  {
+    "medicine_name": "Chlorpheniramine Maleate",
+    "brand_name": ["Piriton U, Daslin"],
+    "medicine_variety": ["2mg"],
+    "medicine_type": "Syrup",
+    "prescription_required": true,
+    "medicine_uses": "Chlorpheniramine Maleate is used in the treatment of allergic conditions - pollen, animal dander, house dust etc"
+  },
+  {
+    "medicine_name": "Cetirizine",
+    "brand_name": ["Cetzine", "Alerid", "Alday"],
+    "medicine_variety": ["10mg"],
+    "medicine_type": "Tablet",
+    "prescription_required": true,
+    "medicine_uses": "Cetirizine is used in the treatment of allergic conditions."
+  },
+  {
+    "medicine_name": "Cetirizine",
+    "brand_name": ["Cetzine", "Alerid"],
+    "medicine_type": "Syrup",
+    "prescription_required": true,
+    "medicine_uses": "Cetirizine is used in the treatment of allergic conditions."
+  },
+  {
+    "medicine_name": "Chlorpheniramine Maleate (2mg) + Paracetamol (500mg) + Phenylephrine (5mg)",
+    "brand_name": ["Wikoryl", "Sinarest New Tablet"],
+    "medicine_type": "Tablet",
+    "prescription_required": true,
+    "medicine_uses": "is used in the treatment of common cold symptoms."
+  },
+  {
+    "medicine_name": "Chlorpheniramine Maleate (2mg) + Paracetamol (500mg) + Phenylephrine (5mg)",
+    "brand_name": ["Wikoryl", "Sinarest New Tablet"],
+    "medicine_type": "Syrup",
+    "prescription_required": true,
+    "medicine_uses": "is used in the treatment of common cold symptoms."
+  },
+  {
+    "medicine_name": "codeine",
+    "brand_name": ["Bjain Opium"],
+    "medicine_variety": ["200CH", "30CH"],
+    "medicine_type": "Liquid",
+    "prescription_required": true,
+    "medicine_uses": ""
+  },
+  {
+    "medicine_name": "Co Trimoxazole",
+    "brand_name": ["Co Trimoxazole SS", "Septran C tablets"],
+    "medicine_variety": ["400mg", "160mg", "80mg"],
+    "medicine_type": "Tablet",
+    "prescription_required": true,
+    "medicine_uses": "Antibiotic - for worms and all"
+  },
+  {
+    "medicine_name": "Albendazol",
+    "brand_name": ["Zentel", "Noworm", "Bandy"],
+    "medicine_variety": ["1mg"],
+    "medicine_type": "Tablet",
+    "prescription_required": true,
+    "medicine_uses": "Albendazole is used in the treatment of parasitic worm infections."
+  },
+  {
+    "medicine_name": "Albendazol",
+    "brand_name": ["Zentel", "Noworm", "Bandy"],
+    "medicine_variety": ["10ml"],
+    "medicine_type": "Suspension",
+    "prescription_required": true,
+    "medicine_uses": "Albendazole is used in the treatment of parasitic worm infections."
+  },
+  {
+    "medicine_name": "Ferrous sulphate",
+    "brand_name": ["Supradyn Tablet"],
+    "medicine_type": "Tablet",
+    "prescription_required": true,
+    "medicine_uses": "Iron tablet - iron deficiency, anemia, pregnant drugs"
+  },
+  {
+    "medicine_name": "Folic Acid",
+    "brand_name": ["Folvite", "Folinal", "Folister"],
+    "medicine_variety": ["5mg"],
+    "medicine_type": "Tablet",
+    "prescription_required": false,
+    "medicine_uses": "Folic Acid is used in the treatment of anemia due to folic acid deficiency. Folic Acid is a form of vitamin B. It plays a vital role in the formation of red blood cells"
+  },
+  {
+    "medicine_name": "Isapgol",
+    "brand_name": ["Naturolax -A Powder Tasty Orange"],
+    "medicine_type": "Powder",
+    "prescription_required": false,
+    "medicine_uses": "used against constipation"
+  },
+  {
+    "medicine_name": "magnesium hydroxide",
+    "brand_name": ["Gelusil", "Digene"],
+    "medicine_type": "Tablet",
+    "prescription_required": false,
+    "medicine_uses": "stomach issues"
+  },
+  {
+    "medicine_name": "magnesium hydroxide",
+    "brand_name": ["Gelusil", "Digene liquid"],
+    "medicine_type": "Liquid",
+    "prescription_required": false,
+    "medicine_uses": "stomach issues"
+  },
+  {
+    "medicine_name": "Mebendazole",
+    "brand_name": ["D Worm", "Mebex"],
+    "medicine_variety": ["100mg", "500mg"],
+    "medicine_type": "Tablet",
+    "prescription_required": true,
+    "medicine_uses": "Mebendazole is used in the treatment of worm infections"
+  },
+  {
+    "medicine_name": "Mebendazole",
+    "brand_name": ["Wormin", "Mebex Suspension"],
+    "medicine_type": "Liquid",
+    "prescription_required": true,
+    "medicine_uses": "Mebendazole is used in the treatment of worm infections"
+  },
+  {
+    "medicine_name": "Metronidazole",
+    "brand_name": ["Flagyl", "Metron"],
+    "medicine_variety": ["200mg", "400mg"],
+    "medicine_type": "Tablet",
+    "prescription_required": true,
+    "medicine_uses": "Metronidazole is used in the treatment of bacterial infections and parasitic infections. Metronidazole is an antibiotic."
+  },
+  {
+    "medicine_name": "Metronidazole",
+    "brand_name": ["Flagyl", "Metron", "Metris"],
+    "medicine_variety": ["200mg/5ml", "100mg/5ml"],
+    "medicine_type": "Suspension",
+    "prescription_required": true,
+    "medicine_uses": "Metronidazole is used in the treatment of bacterial infections and parasitic infections. Metronidazole is an antibiotic."
+  },
+  {
+    "medicine_name": "ORS",
+    "brand_name": ["ORS Powder"],
+    "medicine_type": "Powder",
+    "prescription_required": false,
+    "medicine_uses": "Restores body fluids & electrolytes, lost due to dehydration in during Diarrhea, vomiting, muscle cramping, and exertional heat illness while exercising in hot or humid weather"
+  },
+  {
+    "medicine_name": "Oral Contraceptive Pill (Levonorgestrel)",
+    "brand_name": ["2Eazy Oral Contraceptive Pill", "She", "Nowill"],
+    "medicine_type": "Tablet",
+    "prescription_required": false,
+    "medicine_uses": "Levonorgestrel is used for emergency contraception"
+  },
+  {
+    "medicine_name": "Paracetamol",
+    "brand_name": ["Crocin", "Dolo", "Calpol"],
+    "medicine_variety": ["500mg", "650mg"],
+    "medicine_type": "Tablet",
+    "prescription_required": false,
+    "medicine_uses": "Paracetamol is used for pain relief and fever. It is used to relieve pain in conditions like headache, muscle pain, or dental pain."
+  },
+  {
+    "medicine_name": "Paracetamol",
+    "brand_name": ["Crocin", "Dolo", "Calpol"],
+    "medicine_variety": ["120mg", "250mg"],
+    "medicine_type": "Suspension",
+    "prescription_required": false,
+    "medicine_uses": "Paracetamol is used for pain relief and fever. It is used to relieve pain in conditions like headache, muscle pain, or dental pain."
+  },
+  {
+    "medicine_name": "Paracetamol",
+    "brand_name": ["Crocin", "Dolo", "Calpol"],
+    "medicine_variety": ["120mg", "240mg"],
+    "medicine_type": "Baby drops",
+    "prescription_required": false,
+    "medicine_uses": "Paracetamol is used for pain relief and fever. It is used to relieve pain in conditions like headache, muscle pain, or dental pain."
+  },
+  {
+    "medicine_name": "Penicillin G",
+    "brand_name": ["Pentids", "Fortified P.P", "Longacillin"],
+    "medicine_variety": ["800000IU", "400000IU", "200000IU"],
+    "medicine_type": "Tablet",
+    "prescription_required": true,
+    "medicine_uses": "Antibiotic. Penicillin G is used in the treatment of bacterial infections, syphilis and prevention of rheumatic fever."
+  },
+  {
+    "medicine_name": "Penicillin V",
+    "brand_name": ["Kaypen"],
+    "medicine_variety": ["125mg", "250mg"],
+    "medicine_type": "Tablet",
+    "prescription_required": true,
+    "medicine_uses": "Penicillin V is used in the treatment of bacterial infections and syphilis."
+  },
+  {
+    "medicine_name": "Ampicillin",
+    "brand_name": ["Roscillin"],
+    "medicine_variety": ["500mg", "250mg", "100mg"],
+    "medicine_type": "Tablet",
+    "prescription_required": true,
+    "medicine_uses": "Ampicillin is used in the treatment of bacterial infections. Antibiotic."
+  },
+  {
+    "medicine_name": "Ampicillin",
+    "brand_name": ["Roscillin", "Broadicilin", "Aristocillin", "Campicillin"],
+    "medicine_variety": ["125mg"],
+    "medicine_type": "Syrup",
+    "prescription_required": true,
+    "medicine_uses": "Ampicillin is used in the treatment of bacterial infections. Antibiotic."
+  },
+  {
+    "medicine_name": "Ampicillin",
+    "brand_name": ["Roscillin", "Broadicilin", "Aristocillin", "Campicillin"],
+    "medicine_variety": ["1g", "250mg", "500mg"],
+    "medicine_type": "Injection",
+    "prescription_required": true,
+    "medicine_uses": "Ampicillin is used in the treatment of bacterial infections. Antibiotic."
+  },
+  {
+    "medicine_name": "Amoxycillin",
+    "brand_name": ["Mox", "Novamox", "Wymox"],
+    "medicine_variety": ["500mg", "250mg", "125mg"],
+    "medicine_type": "Tablet",
+    "prescription_required": true,
+    "medicine_uses": "Amoxycillin is used in the treatment of bacterial infections. Antibiotic"
+  },
+  {
+    "medicine_name": "Amoxycillin",
+    "brand_name": ["Mox", "Novamox", "Wymox"],
+    "medicine_type": "Suspension",
+    "prescription_required": true,
+    "medicine_uses": "Amoxycillin is used in the treatment of bacterial infections. Antibiotic"
+  },
+  {
+    "medicine_name": "Amoxycillin",
+    "brand_name": ["Mox", "Novamox", "Wymox"],
+    "medicine_variety": ["250mg", "500mg"],
+    "medicine_type": "Injection",
+    "prescription_required": true,
+    "medicine_uses": "Amoxycillin is used in the treatment of bacterial infections. Antibiotic"
+  },
+  {
+    "medicine_name": "Pyrantel Pamoate",
+    "brand_name": ["Nemocid", "Expent", "Papa"],
+    "medicine_type": "Tablet",
+    "prescription_required": true,
+    "medicine_uses": "Pyrantel Pamoate is used in the treatment of worm infections. antihelmintic medication."
+  },
+  {
+    "medicine_name": "Pyrantel Pamoate",
+    "brand_name": ["Nemocid", "Expent", "Papa"],
+    "medicine_type": "Suspension",
+    "prescription_required": true,
+    "medicine_uses": "Pyrantel Pamoate is used in the treatment of worm infections. antihelmintic medication."
+  },
+  {
+    "medicine_name": "Povidone Iodine",
+    "brand_name": ["Betadine", "Wokadine", "Zuvendine"],
+    "medicine_variety": ["10%"],
+    "medicine_type": "Liquid",
+    "prescription_required": false,
+    "medicine_uses": "Povidone Iodine is used to prevent Wound infection"
+  },
+  {
+    "medicine_name": "Povidone Iodine",
+    "brand_name": ["Betadine", "Wokadine", "Zuvendine"],
+    "medicine_variety": ["2%"],
+    "medicine_type": "Gargle mint",
+    "prescription_required": false,
+    "medicine_uses": "Povidone Iodine is used to prevent Wound infection"
+  },
+  {
+    "medicine_name": "Povidone Iodine",
+    "brand_name": ["Betadine", "Wokadine", "Zuvendine"],
+    "medicine_variety": ["10%"],
+    "medicine_type": "Ointment",
+    "prescription_required": false,
+    "medicine_uses": "Povidone Iodine is used to prevent Wound infection"
+  },
+  {
+    "medicine_name": "Primaquine",
+    "brand_name": ["Malirid-DS", "PMG inga", "Primec"],
+    "medicine_variety": ["15mg", "7.5mg", "2.5mg"],
+    "medicine_type": "Tablet",
+    "prescription_required": true,
+    "medicine_uses": "Primaquine is a an antiparasitic medication which treats malaria. "
+  },
+  {
+    "medicine_name": "Ringworm Ointment",
+    "brand_name": ["SBL Acid Chryso Ointment"],
+    "medicine_type": "Ointment",
+    "prescription_required": false,
+    "medicine_uses": "Ringworm Ointment"
+  },
+  {
+    "medicine_name": "Salbutamol",
+    "brand_name": ["Asthalin", "Salbair", "Brethmol"],
+    "medicine_type": "inhaler solution",
+    "prescription_required": true,
+    "medicine_uses": "Salbutamol is used in the treatment of asthma and chronic obstructive pulmonary disease. Salbutamol is a bronchodilator."
+  },
+  {
+    "medicine_name": "Salbutamol",
+    "brand_name": ["Asthalin", "Salbetol", "Salbair"],
+    "medicine_variety": ["4mg", "2mg"],
+    "medicine_type": "Tablet",
+    "prescription_required": true,
+    "medicine_uses": "Salbutamol is used in the treatment of asthma and chronic obstructive pulmonary disease. Salbutamol is a bronchodilator."
+  },
+  {
+    "medicine_name": "Senna",
+    "brand_name": ["Senna tablet*"],
+    "medicine_variety": ["400mg"],
+    "medicine_type": "Tablet",
+    "prescription_required": false
+  },
+  {
+    "medicine_name": "Vitamin B complex",
+    "brand_name": ["Vitamin B Complex tablets"],
+    "medicine_type": "Tablet",
+    "prescription_required": false,
+    "medicine_uses": "Supplements"
+  },
+  {
+    "medicine_name": "Vitamin D",
+    "brand_name": ["Duracal"],
+    "medicine_variety": ["600000IU", "300000IU"],
+    "medicine_type": "Injection",
+    "prescription_required": true,
+    "medicine_uses": "Suppliments"
+  },
+  {
+    "medicine_name": "Calcium + Vitamin D3",
+    "brand_name": ["Calmin", "Hical"],
+    "medicine_type": "Tablet",
+    "prescription_required": false,
+    "medicine_uses": "Suppliments"
+  },
+  {
+    "medicine_name": "Calcium + Vitamin D3",
+    "brand_name": ["Calmin", "Hical"],
+    "medicine_type": "Syrup",
+    "prescription_required": false,
+    "medicine_uses": "Supplements"
+  },
+  {
+    "medicine_name": "Permethrin",
+    "brand_name": ["Zeroscab", "Perlice", "HHMite"],
+    "medicine_type": "Creme",
+    "prescription_required": false,
+    "medicine_uses": "Permethrin is used in the treatment of scabies and head lice."
+  },
+  {
+    "medicine_name": "Permethrin",
+    "brand_name": ["Zeroscab", "Perlice", "HHMite"],
+    "medicine_type": "Soap",
+    "prescription_required": false,
+    "medicine_uses": "Permethrin is used in the treatment of scabies and head lice."
+  },
+  {
+    "medicine_name": "Amoxycillin + Clavulanic Acid",
+    "brand_name": ["Moxclav", "Moxikind-CV", "Clavam"],
+    "medicine_variety": ["625mg", "375mg"],
+    "medicine_type": "Tablet",
+    "prescription_required": true,
+    "medicine_uses": "Amoxycillin + Clavulanic Acid is used in the treatment of bacterial infections. It is indicated for short-term treatment of bacterial infections of respiratory tract, genito-urinary tract, skin, bone, and tooth among others."
+  },
+  {
+    "medicine_name": "Amoxycillin + Clavulanic Acid",
+    "brand_name": ["Moxclav", "Moxikind-CV", "Clavam"],
+    "medicine_variety": ["1000mg/200mg", "500mg/100mg"],
+    "medicine_type": "Injection",
+    "prescription_required": true,
+    "medicine_uses": "Amoxycillin is an antibiotic. Clavulanic Acid enhances its performance on body"
+  },
+  {
+    "medicine_name": "Amoxycillin + Clavulanic Acid",
+    "brand_name": ["Moxclav", "Moxikind-CV", "Clavam"],
+    "medicine_type": "Syrup",
+    "prescription_required": true,
+    "medicine_uses": "Amoxycillin is an antibiotic. Clavulanic Acid enhances its performance on body"
+  },
+  {
+    "medicine_name": "Ciprofloxacin + Dexamethasone",
+    "brand_name": ["Ciplox", "Zoxan", "Ciplex"],
+    "medicine_type": "Drops",
+    "prescription_required": true,
+    "medicine_uses": "Ciprofloxacin+Dexamethasone is used in the treatment of eye infection with inflammation."
+  },
+  {
+    "medicine_name": "Norfloxacin + Lactobacillus",
+    "brand_name": ["Norflox"],
+    "medicine_variety": ["100mg", "200mg", "400mg"],
+    "medicine_type": "Tablet",
+    "prescription_required": true,
+    "medicine_uses": "Norfloxacin is antibiotic. Lactobacillus is a probiotic. It works by restoring the balance of good bacteria in the intestine."
+  },
+  {
+    "medicine_name": "Norfloxacin + Lactobacillus",
+    "brand_name": ["Norflox"],
+    "medicine_type": "Eye Drops",
+    "prescription_required": true,
+    "medicine_uses": "Norfloxacin is antibiotic. Lactobacillus is a probiotic. It works by restoring the balance of good bacteria in the intestine."
+  },
+  {
+    "medicine_name": "Cefixime",
+    "brand_name": ["Taxim", "Zifi", "Omnix"],
+    "medicine_variety": ["100mg", "200mg", "400mg"],
+    "medicine_type": "Tablet",
+    "prescription_required": true,
+    "medicine_uses": "Antibiotic. Cefixime is used in the treatment of bacterial infections."
+  },
+  {
+    "medicine_name": "Cefixime",
+    "brand_name": ["Taxim", "Zifi", "Omnix"],
+    "medicine_type": "Syrup",
+    "prescription_required": true,
+    "medicine_uses": "Antibiotic. Cefixime is used in the treatment of bacterial infections."
+  },
+  {
+    "medicine_name": "Cefixime",
+    "brand_name": ["Taxim", "Zifi", "Omnix"],
+    "medicine_type": "Drops",
+    "prescription_required": true,
+    "medicine_uses": "Antibiotic. Cefixime is used in the treatment of bacterial infections."
+  }
+]

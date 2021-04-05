@@ -36,18 +36,24 @@ client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_DETAILS)
 
 database = client.patients
 
-patient_collection = database.get_collection("patient_collection16")
+patient_collection = database.get_collection("patient_collection17")
 patient_collection.create_index("parent")
 patient_collection.create_index("doc_type")
 patient_collection.create_index(
     [("mobile_no", pymongo.DESCENDING), ("name", pymongo.DESCENDING), ("doc_type", pymongo.DESCENDING),
      ("time", pymongo.ASCENDING)], unique=True)
 
-doctor_external_collection = database.get_collection("doctor_collection2")
+doctor_external_collection = database.get_collection("doctor_collection3")
 doctor_external_collection.create_index("specialisation")
 doctor_external_collection.create_index([("mobile_no", pymongo.DESCENDING)], unique=True)
 
-medicine_db = database.get_collection("medical_collection")
+medical_test_db = database.get_collection("medical_test")
+medical_test_db.create_index("test_name", unique=True)
+
+pre_existing_disease_db = database.get_collection("pre_existing_disease")
+pre_existing_disease_db.create_index("disease_name", unique=True)
+
+medicine_db = database.get_collection("medicine_collection")
 medicine_db.create_index([("medicine_name", pymongo.DESCENDING)], unique=True)
 
 user_db = database.get_collection("user_collection1")
@@ -298,3 +304,41 @@ def patient_helper(patient) -> dict:
     # print(patient)
     patient["_id"] = str(patient["_id"])
     return patient
+
+
+async def get_medical_test(test_name=None):
+    if test_name:
+        test = await medical_test_db.find_one({"test_name": test_name})
+        if test:
+            return patient_helper(test)
+        return None
+    else:
+        tests = []
+        async for test in medical_test_db.find():
+            tests.append(patient_helper(test))
+        return tests
+
+
+async def add_medical_test(test_data: dict) -> dict:
+    new_test = await medical_test_db.insert_one(test_data)
+    return new_test
+
+
+async def get_pre_existing_disease(disease_name=None):
+    if disease_name:
+        disease = await pre_existing_disease_db.find_one({"disease_name": disease_name})
+        if disease:
+            return patient_helper(disease)
+        return None
+    else:
+        diseases = []
+        async for disease in pre_existing_disease_db.find():
+            diseases.append(patient_helper(disease))
+        return diseases
+
+
+async def add_pre_existing_disease(disease: dict) -> dict:
+    print(disease)
+    new_disease = await pre_existing_disease_db.insert_one(disease)
+    return new_disease
+

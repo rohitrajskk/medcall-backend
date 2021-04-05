@@ -192,15 +192,15 @@ class Address(BaseModel):
 class Doctor(BaseModel):
     alternate_mobile_no: Optional[int]
     doctor_name: str
-    degree: str
+    degree: Optional[str]
     specialisation: str
     registration_no: Optional[str]
     consultation_fee: int
     rating: Optional[float]
-    doctor_address: Optional[Address]
-    service_timing_week: Optional[str]
-    service_timing_day: Optional[str]
+    doctor_address: Optional[str]
+    service_timing: Optional[str]
     experience: Optional[int]
+    associated_hospital: Optional[str]
 
     class Config:
         use_enum_values = True
@@ -230,9 +230,10 @@ class Vital(BaseModel):
 class Medicine(BaseModel):
     medicine_name: str
     brand_name: Optional[List[str]]
-    medicine_mg: Optional[List[str]]
+    medicine_variety: Optional[List[str]]
     medicine_type: str
     medicine_uses: Optional[str]
+    prescription_required: Optional[bool]
 
 
 class MedicineTreatment(BaseModel):
@@ -251,6 +252,12 @@ class Test(BaseModel):
     lab_name: Optional[str]
     lab_address: Optional[Address]
     test_comment: Optional[str]
+    test_uses: Optional[str]
+    test_required_symptom: Optional[str]
+
+
+class PreExistingDisease(BaseModel):
+    disease_name: str
 
 
 class Prescription(BaseModel):
@@ -539,6 +546,7 @@ async def get_appointments():
 @app.get("/inactive/appointment", tags=["Root"])
 async def get_appointments():
     appointment = await database.inactive_appointment()
+    appointment.reverse()
     if appointment:
         return appointment
     else:
@@ -568,3 +576,34 @@ async def websocket_endpoint(websocket: WebSocket, username: str):
     await manager.connect(websocket, username)
     while True:
         data = await websocket.receive_text()
+
+
+@app.get("/medical-test", tags=["Root"])
+async def get_medical_test(test_name: Optional[str] = None):
+    tests = await database.get_medical_test(test_name=test_name)
+    if tests:
+        return tests
+    else:
+        return {"message": "No Medical tests found in the database"}
+
+
+@app.post("/medical-test", tags=["Root"])
+async def add_medical_test(test: Test):
+    new_test = await database.add_medical_test(test.dict())
+    return {"doctor_id": str(new_test.inserted_id), "message": "Successfully added test"}
+
+"""
+@app.get("/pre-existing-disease", tags=["Root"])
+async def get_pre_existing_disease(disease_name: Optional[str] = None):
+    diseases = await database.get_pre_existing_disease(disease_name=disease_name)
+    if diseases:
+        return diseases
+    else:
+        return {"message": "No diseases found in the database"}
+
+
+@app.post("/pre-existing-disease", tags=["Root"])
+async def add_pre_existing_disease(disease: PreExistingDisease):
+    new_disease = await database.add_pre_existing_disease(disease.dict())
+    return {"doctor_id": str(new_disease.inserted_id), "message": "Successfully added Pre existing disease"}
+"""
