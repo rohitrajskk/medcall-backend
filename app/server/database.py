@@ -50,7 +50,7 @@ doctor_external_collection.create_index([("mobile_no", pymongo.DESCENDING)], uni
 medical_test_db = database.get_collection("medical_test")
 medical_test_db.create_index("test_name", unique=True)
 
-pre_existing_disease_db = database.get_collection("pre_existing_disease")
+pre_existing_disease_db = database.get_collection("pre_existing_disease1")
 pre_existing_disease_db.create_index("disease_name", unique=True)
 
 medicine_db = database.get_collection("medicine_collection")

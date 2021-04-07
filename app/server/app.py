@@ -592,7 +592,7 @@ async def add_medical_test(test: Test):
     new_test = await database.add_medical_test(test.dict())
     return {"doctor_id": str(new_test.inserted_id), "message": "Successfully added test"}
 
-"""
+
 @app.get("/pre-existing-disease", tags=["Root"])
 async def get_pre_existing_disease(disease_name: Optional[str] = None):
     diseases = await database.get_pre_existing_disease(disease_name=disease_name)
@@ -606,4 +606,3 @@ async def get_pre_existing_disease(disease_name: Optional[str] = None):
 async def add_pre_existing_disease(disease: PreExistingDisease):
     new_disease = await database.add_pre_existing_disease(disease.dict())
     return {"doctor_id": str(new_disease.inserted_id), "message": "Successfully added Pre existing disease"}
-"""
