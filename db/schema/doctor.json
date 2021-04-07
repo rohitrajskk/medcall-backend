@@ -2,7 +2,6 @@
     "mobile_no": "integer (This will become uinque id for this user)",
     "usrd_id" :"system generated ID",
     "user_type": "string(doctor/patient/medical_shop)",
-    "availibility": "string(enum: inhouse/external)",
     "name": "string",
     "degree": "string",
     "specilisation": "string",

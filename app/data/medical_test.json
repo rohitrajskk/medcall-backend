@@ -1,0 +1,97 @@
+[
+  {
+    "test_name": "ANA (Antinuclear Antibody)",
+    "test_uses": "diagnosing chronic disease affecting multiple parts of the body, including the joints, blood vessels, kidneys, and brain (arthritis, etc.) - Has something to do with antibodies attacking our own blood cells",
+    "test_required_symptom": "The symptoms of an autoimmune disease are joint or muscle pain, tiredness, mild fever, rash, weakness, light sensitivity, numbness, and hair loss. Autoimmune diseases are curable."
+  },
+  {
+    "test_name": "Amylase Test",
+    "test_uses": "Abnormal levels of amylase may indicate pancreatitis or another problem with the pancreas. Pancreatitis is a disease in which your pancreas becomes inflamed.",
+    "test_required_symptom": "Abdominal pain, fever as well, abdominal pain affecting your back. This is when the doctor feels like you might have pancreatitis."
+  },
+  {
+    "test_name": "Blood Sugar test",
+    "test_uses": "To test conditions like anaemia, gout or diabetes",
+    "test_required_symptom": "Unintended Weight loss, Dehydration and dry mouth, Slow healing of wound, Blurry vision, Frequent urination"
+  },
+  {
+    "test_name": "CT Scans",
+    "test_uses": "CT scans can detect bone and joint problems, like complex bone fractures and tumors. If you have a condition like cancer, heart disease, emphysema, or liver masses, CT scans can spot it or help doctors see any changes."
+  },
+  {
+    "test_name": "CBC (Complete Blood Count)",
+    "test_uses": "measure of the concentration of red blood cells, white blood cells, and platelets in the blood. Very commonly used test for general health assessment",
+    "test_required_symptom": "Fatigue, Weakness, Inflammation, Bruising, Excessive bleeding, Clotting inflammation, Chest pain, Dizziness, Shortness of breath, Easy bruising, Heavy menstrual bleeding, Fever higher than 100.5F (38C), Chills"
+  },
+  {
+    "test_name": "Hemoglobin A1C (HbA1c)",
+    "test_uses": "Part of CBC - to evaluate and monitor the severity of anemia or polycythemia.",
+    "test_required_symptom": "Almost same as above + depression, Brittle nails, Nails, pale skin and gums, Cold feet and hands"
+  },
+  {
+    "test_name": "CRP (C – Reactive protein)",
+    "test_uses": "CRP causes inflammation in the body - which can lead to damaging immune system - Burns, Pneumonia, Tuberculosis, Heart Attack, Inflammatory disease",
+    "test_required_symptom": "No specific symptom :/"
+  },
+  {
+    "test_name": "MRI Scans",
+    "test_uses": "Health care professionals use MRI scans to diagnose a variety of conditions, from torn ligaments to tumors"
+  },
+  {
+    "test_name": "PET Scans"
+  },
+  {
+    "test_name": "TSH - Thyroid Stimulating Hormone ",
+    "test_uses": "The thyroid hormones play a major role in regulating our body functions like weight, body temperature and muscle strength etc. ",
+    "test_required_symptom": "to detect thyroid disorder, female infertility, symptoms - too much fatigue, dry skin, cold hands or feets, constipation, etc."
+  },
+  {
+    "test_name": "Total T3",
+    "test_uses": "Triiodothyronine(T3) is one of the hormones produced by the thyroid gland. This test measures bound and free form of T3 in blood across body",
+    "test_required_symptom": "same as above - hyperthyroidism, slowed metabolism"
+  },
+  {
+    "test_name": "Total T4",
+    "test_uses": "T3 is 3 times more potent than T4. A total T4 (Thyroxin) test is conducted to evaluate thyroid gland function; diagnose hypothyroidism or hyperthyroidism; to screen for hypothyroidism in newborns.",
+    "test_required_symptom": "same as above."
+  },
+  {
+    "test_name": "Free T3",
+    "test_uses": "The free (unbound) segment of triiodothyronine (free T3) is in control of the biological action and influences the body’s control of metabolism.",
+    "test_required_symptom": "same as above."
+  },
+  {
+    "test_name": "Free T4",
+    "test_uses": "similar to above",
+    "test_required_symptom": "same as above."
+  },
+  {
+    "test_name": "Lipid profile",
+    "test_uses": "The lipid profile test is a combination of tests conducted together to check for any risks of coronary heart disease. - Good cholesterol, bad cholesterol, etc.",
+    "test_required_symptom": "smoking, overweight, unhealthy diet, etc."
+  },
+  {
+    "test_name": "Liver Function Test",
+    "test_uses": "To check functionality of liver - evaluating the level of liver enzymes, proteins or bilirubin in the blood. To check hepatitis C in the liver as well",
+    "test_required_symptom": "Jaundice fever – skin and eyes turn yellowish, Swelling and pain of the abdominal, Swelling of legs and ankles, Itching of the skin, Dark colour Urine, Stool is either bloody, tar-coloured or pale"
+  },
+  {
+    "test_name": "Renal Function test"
+  },
+  {
+    "test_name": "Sr uric acid",
+    "test_uses": "The test can help detect any abnormalities of uric acid production and removal by the body",
+    "test_required_symptom": "monitor these levels in people undergoing chemotherapy or radiation treatment. This test is used to diagnose gout and the cause of recurrent kidney stones."
+  },
+  {
+    "test_name": "Sr Electrolyte"
+  },
+  {
+    "test_name": "Abd. Sonography",
+    "test_uses": "An abdominal ultrasound test is usually done to check the conditions of the major organs in the human body abdominal cavity",
+    "test_required_symptom": "enlarged organ, hernia, pancreatitis, gallstone, kidney blockage, liver cancer, appendicitis, abnormal uterine structure, abnormal foetus structure, internal tumour"
+  },
+  {
+    "test_name": "Sr Creatinine"
+  }
+]
