@@ -76,6 +76,12 @@ async def get_user(username=None, mobile_no=None):
             return patient_helper(user)
         else:
             return None
+    else:
+        users = []
+        async for user in user_db.find():
+            user.pop('password')
+            users.append(patient_helper(user))
+        return users
 
 
 async def create_user(user: dict):

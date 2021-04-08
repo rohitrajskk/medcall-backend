@@ -284,7 +284,16 @@ async def create_user(user: User, response: Response, current_user: dict = Depen
 
 @app.get("/user", tags=["Root"])
 async def create_user(current_user: dict = Depends(get_current_user)):
-    return current_user
+    return current_user.pop('password')
+
+
+@app.get("/user/all", tags=["Root"])
+async def create_user(response: Response, current_user: dict = Depends(get_current_user)):
+    if current_user.get('user_role') != UserRole.admin.value:
+        response.status_code = status.HTTP_403_FORBIDDEN
+        return {"Admin only API"}
+    users = await database.get_user()
+    return users
 
 
 @app.put("/user/medical-shop/profile", tags=["Root"])
