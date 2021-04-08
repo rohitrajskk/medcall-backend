@@ -325,7 +325,7 @@ async def medical_shop_profile_update(responses: Response, medical_shop: Medical
     :param medical_shop:
     :type responses: object
     """
-    if current_user["user_role"] is not UserRole.medical_shop.value:
+    if current_user["user_role"] != UserRole.medical_shop.value:
         responses.status_code = status.HTTP_400_BAD_REQUEST
         return {"Invalid user role passed for profile update"}
     update = database.update_user(username=current_user.get("username"), user_data=medical_shop.dict())
@@ -343,7 +343,7 @@ async def doctor_profile_update(responses: Response, doctor: Doctor,
     :param doctor:
     :type responses: object
     """
-    if current_user["user_role"] is not UserRole.doctor.value:
+    if current_user["user_role"] != UserRole.doctor.value:
         responses.status_code = status.HTTP_400_BAD_REQUEST
         return {"Invalid user role passed for profile update"}
     update = await database.update_user(username=current_user.get("username"), user_data=doctor.dict())
@@ -371,7 +371,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
 
 
 @app.get("/patient/{patient_id}", tags=["Root"])
-async def get_patients(patient_id):
+async def get_patients(patient_id, current_user: dict = Depends(get_current_user)):
     # return {"message": "Return patients"}
     patients = await database.get_patient(patient_id=patient_id)
     # print(patients)
@@ -382,7 +382,7 @@ async def get_patients(patient_id):
 
 
 @app.get("/patient", tags=["Root"])
-async def get_patients(mobile_no: Optional[int] = None):
+async def get_patients(current_user: dict = Depends(get_current_user), mobile_no: Optional[int] = None):
     patients = await database.get_patient(mobile_no=mobile_no)
     if patients:
         return patients
@@ -391,13 +391,13 @@ async def get_patients(mobile_no: Optional[int] = None):
 
 
 @app.post("/patient", tags=["Root"], )
-async def add_patients(patient: Patient):
+async def add_patients(patient: Patient, current_user: dict = Depends(get_current_user)):
     new_patient = await database.add_patient(patient.dict())
     return {"patient_id": str(new_patient.inserted_id), "message": "Successfully added patient"}
 
 
 @app.get("/doctor/external", tags=["Root"])
-async def get_external_doctor(mobile_no: Optional[int] = None, specialisation: Optional[str] = None,
+async def get_external_doctor(current_user: dict = Depends(get_current_user), mobile_no: Optional[int] = None, specialisation: Optional[str] = None,
                               doctor_id: Optional[str] = None):
     doctors = await database.get_external_doctor(mobile_no=mobile_no, specialisation=specialisation,
                                                  doctor_id=doctor_id)
@@ -408,13 +408,13 @@ async def get_external_doctor(mobile_no: Optional[int] = None, specialisation: O
 
 
 @app.post("/doctor/external", tags=["Root"], )
-async def add_doctor(doctor: ExternalDoctor):
+async def add_doctor(doctor: ExternalDoctor, current_user: dict = Depends(get_current_user)):
     new_doctor = await database.add_doctor(doctor.dict())
     return {"doctor_id": str(new_doctor.inserted_id), "message": "Successfully added doctor"}
 
 
 @app.get("/patient/{patient_id}/appointment/{appointment_id}", tags=["Root"])
-async def get_appointments(patient_id, appointment_id):
+async def get_appointments(patient_id, appointment_id, current_user: dict = Depends(get_current_user)):
     # return {"message": "Return patients"}
     appointment = await database.get_appointment(patient_id=patient_id, appointment_id=appointment_id)
     if appointment:
@@ -424,7 +424,7 @@ async def get_appointments(patient_id, appointment_id):
 
 
 @app.get("/patient/{patient_id}/appointment", tags=["Root"])
-async def get_appointments(patient_id):
+async def get_appointments(patient_id, current_user: dict = Depends(get_current_user)):
     # return {"message": "Return patients"}
     appointment = await database.get_appointment(patient_id=patient_id)
     if appointment:
@@ -434,7 +434,7 @@ async def get_appointments(patient_id):
 
 
 @app.post("/patient/{patient_id}/appointment", tags=["Root"])
-async def create_appointment(patient_id, appointment: Appointment):
+async def create_appointment(patient_id, appointment: Appointment, current_user: dict = Depends(get_current_user)):
     new_appointment = await database.create_appointment(patient_id=patient_id, in_app=appointment.dict())
     if new_appointment is not None:
         # print(new_appointment)
@@ -449,7 +449,7 @@ async def create_appointment(patient_id, appointment: Appointment):
 
 
 @app.post("/patient/{patient_id}/appointment/{appointment_id}/prescription", tags=["Root"])
-async def add_prescription(patient_id, appointment_id, prescription: Prescription):
+async def add_prescription(patient_id, appointment_id, prescription: Prescription, current_user: dict = Depends(get_current_user)):
     # return {"message": "Return patients"}
     new_prescription = await database.add_appointment_prescription(prescription=prescription.dict(),
                                                                    patient_id=patient_id, appointment_id=appointment_id)
@@ -460,7 +460,7 @@ async def add_prescription(patient_id, appointment_id, prescription: Prescriptio
 
 
 @app.get("/patient/{patient_id}/appointment/{appointment_id}/prescription", tags=["Root"])
-async def get_prescription(patient_id, appointment_id):
+async def get_prescription(patient_id, appointment_id, current_user: dict = Depends(get_current_user)):
     appointment = await database.get_appointment(patient_id=patient_id, appointment_id=appointment_id)
     if appointment is None:
         return {"message": "No appointment found with ID: {} in the database".format(appointment_id)}
@@ -471,7 +471,7 @@ async def get_prescription(patient_id, appointment_id):
 
 
 @app.post("/patient/{patient_id}/appointment/{appointment_id}/referral", tags=["Root"])
-async def add_referral(patient_id, appointment_id, referral: ReferralDoctor):
+async def add_referral(patient_id, appointment_id, referral: ReferralDoctor, current_user: dict = Depends(get_current_user)):
     new_referral = await database.add_appointment_referral(referral_doctor=referral.dict(), patient_id=patient_id,
                                                            appointment_id=appointment_id)
     if new_referral:
@@ -481,7 +481,7 @@ async def add_referral(patient_id, appointment_id, referral: ReferralDoctor):
 
 
 @app.get("/patient/{patient_id}/appointment/{appointment_id}/referral", tags=["Root"])
-async def get_referral(patient_id, appointment_id):
+async def get_referral(patient_id, appointment_id, current_user: dict = Depends(get_current_user)):
     appointment = await database.get_appointment(patient_id=patient_id, appointment_id=appointment_id)
     if appointment is None:
         return {"message": "No appointment found with ID: {} in the database".format(appointment_id)}
@@ -493,7 +493,7 @@ async def get_referral(patient_id, appointment_id):
 
 
 @app.put("/patient/{patient_id}/appointment/{appointment_id}/status", tags=["Root"])
-async def update_status(patient_id, appointment_id, appointment_status: AppointmentStatus):
+async def update_status(patient_id, appointment_id, appointment_status: AppointmentStatus, current_user: dict = Depends(get_current_user)):
     new_status = await database.update_appointment_status(patient_id=patient_id, appointment_id=appointment_id,
                                                           status=appointment_status)
     if new_status:
@@ -524,7 +524,7 @@ async def update_status(patient_id, appointment_id, appointment_status: Appointm
 
 
 @app.get("/patient/{patient_id}/appointment/{appointment_id}/status", tags=["Root"])
-async def get_status(patient_id, appointment_id):
+async def get_status(patient_id, appointment_id, current_user: dict = Depends(get_current_user)):
     appointment = await database.get_appointment(patient_id=patient_id, appointment_id=appointment_id)
     if appointment is None:
         return {"message": "No appointment found with ID: {} in the database".format(appointment_id)}
@@ -535,7 +535,7 @@ async def get_status(patient_id, appointment_id):
 
 
 @app.get("/active/appointment", tags=["Root"])
-async def get_appointments():
+async def get_appointments(current_user: dict = Depends(get_current_user)):
     appointment = await database.active_appointment()
     if appointment:
         return appointment
@@ -544,7 +544,7 @@ async def get_appointments():
 
 
 @app.get("/inactive/appointment", tags=["Root"])
-async def get_appointments():
+async def get_appointments(current_user: dict = Depends(get_current_user)):
     appointment = await database.inactive_appointment()
     appointment.reverse()
     if appointment:
@@ -554,7 +554,7 @@ async def get_appointments():
 
 
 @app.get("/medicine", tags=["Root"])
-async def get_medicine(medicine_name: Optional[str] = None, medicine_id: Optional[str] = None):
+async def get_medicine(current_user: dict = Depends(get_current_user), medicine_name: Optional[str] = None, medicine_id: Optional[str] = None):
     medicines = await database.get_medicine(medicine_name=medicine_name, medicine_id=medicine_id)
     if medicines:
         return medicines
@@ -563,7 +563,7 @@ async def get_medicine(medicine_name: Optional[str] = None, medicine_id: Optiona
 
 
 @app.post("/medicine", tags=["Root"])
-async def get_medicine(medicine: Medicine):
+async def get_medicine(medicine: Medicine, current_user: dict = Depends(get_current_user)):
     medicines = await database.add_medicine(medicine.dict())
     if medicines:
         return {"Added medicine with id: {}".format(medicines.inserted_id)}
@@ -579,7 +579,7 @@ async def websocket_endpoint(websocket: WebSocket, username: str):
 
 
 @app.get("/medical-test", tags=["Root"])
-async def get_medical_test(test_name: Optional[str] = None):
+async def get_medical_test(current_user: dict = Depends(get_current_user), test_name: Optional[str] = None):
     tests = await database.get_medical_test(test_name=test_name)
     if tests:
         return tests
@@ -588,13 +588,13 @@ async def get_medical_test(test_name: Optional[str] = None):
 
 
 @app.post("/medical-test", tags=["Root"])
-async def add_medical_test(test: Test):
+async def add_medical_test(test: Test, current_user: dict = Depends(get_current_user)):
     new_test = await database.add_medical_test(test.dict())
     return {"doctor_id": str(new_test.inserted_id), "message": "Successfully added test"}
 
 
 @app.get("/pre-existing-disease", tags=["Root"])
-async def get_pre_existing_disease(disease_name: Optional[str] = None):
+async def get_pre_existing_disease(current_user: dict = Depends(get_current_user), disease_name: Optional[str] = None):
     diseases = await database.get_pre_existing_disease(disease_name=disease_name)
     if diseases:
         return diseases
@@ -603,6 +603,6 @@ async def get_pre_existing_disease(disease_name: Optional[str] = None):
 
 
 @app.post("/pre-existing-disease", tags=["Root"])
-async def add_pre_existing_disease(disease: PreExistingDisease):
+async def add_pre_existing_disease(disease: PreExistingDisease, current_user: dict = Depends(get_current_user)):
     new_disease = await database.add_pre_existing_disease(disease.dict())
     return {"doctor_id": str(new_disease.inserted_id), "message": "Successfully added Pre existing disease"}
