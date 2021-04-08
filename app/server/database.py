@@ -16,6 +16,7 @@ class UserRole(str, Enum):
     doctor = 'doctor'
     medical_shop = 'medical_shop'
     patient = 'patient'
+    admin = 'admin'
 
 
 class AppointmentStatus(str, Enum):

@@ -54,7 +54,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/static", StaticFiles(directory="/home/ubuntu/development/medcall-backend/app/server"), name="static")
 
 
 @app.get("/docs", include_in_schema=False)
@@ -283,7 +283,10 @@ async def read_root():
 
 
 @app.post("/user", tags=["Root"])
-async def create_user(user: User, response: Response):
+async def create_user(user: User, response: Response, current_user: dict = Depends(get_current_user)):
+    if current_user.get('user_role') != UserRole.admin.value:
+        response.status_code = status.HTTP_403_FORBIDDEN
+        return {"Only admin is allowed to create new user"}
     old_user = await database.get_user(username=user.username, mobile_no=user.mobile_no)
     if old_user:
         response.status_code = status.HTTP_409_CONFLICT
