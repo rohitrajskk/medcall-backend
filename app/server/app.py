@@ -284,7 +284,8 @@ async def create_user(user: User, response: Response, current_user: dict = Depen
 
 @app.get("/user", tags=["Root"])
 async def create_user(current_user: dict = Depends(get_current_user)):
-    return current_user.pop('password')
+    current_user.pop('password')
+    return current_user
 
 
 @app.get("/user/all", tags=["Root"])
