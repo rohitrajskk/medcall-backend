@@ -212,7 +212,7 @@ async def create_appointment(patient_id, in_app: dict):
     appointment = dict()
     appointment["patient"] = patient_helper(patient)
     appointment["medical_shop_id"] = in_app.pop("medical_shop_id")
-    appointment["vital"] = in_app
+    appointment["vitals"] = in_app["vitals"]
     appointment["parent"] = patient_id
     appointment["time"] = datetime.utcnow().timestamp()
     appointment["doc_type"] = DocType.APPOINTMENT.value
@@ -349,3 +349,19 @@ async def add_pre_existing_disease(disease: dict) -> dict:
     new_disease = await pre_existing_disease_db.insert_one(disease)
     return new_disease
 
+
+async def update_appointment_vital(vital: dict, patient_id=None, appointment_id=None):
+    """
+    :param vital:
+    :param appointment_id:
+    :param patient_id:
+    """
+    if appointment_id is None:
+        return None
+    else:
+        result = await patient_collection.update_one({"_id": ObjectId(appointment_id)},
+                                                     {"$set": {"vitals": vital}})
+        if result.modified_count == 1:
+            return appointment_id
+        else:
+            return None
