@@ -362,12 +362,13 @@ async def get_patients(patient_id, current_user: dict = Depends(get_current_user
 
 
 @app.get("/patient", tags=["Root"])
-async def get_patients(current_user: dict = Depends(get_current_user), mobile_no: Optional[int] = None):
+async def get_patients(response: Response, mobile_no: Optional[int] = None, current_user: dict = Depends(get_current_user)):
     patients = await database.get_patient(mobile_no=mobile_no)
     if patients:
         return patients
     else:
-        return {"message": "No patients found in the database"}
+        response.status_code = status.HTTP_404_NOT_FOUND
+        return []
 
 
 @app.post("/patient", tags=["Root"], )

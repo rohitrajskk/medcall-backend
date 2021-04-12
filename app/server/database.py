@@ -37,7 +37,7 @@ client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_DETAILS)
 
 database = client.patients
 
-patient_collection = database.get_collection("patient_collection17")
+patient_collection = database.get_collection("patient_collection18")
 patient_collection.create_index("parent")
 patient_collection.create_index("doc_type")
 patient_collection.create_index(
@@ -122,6 +122,8 @@ async def get_patient(patient_id=None, mobile_no=None):
     elif mobile_no:
         patients = []
         parent_user = await patient_collection.find_one({"mobile_no": mobile_no, "parent": None})
+        if parent_user is None:
+            return patients
         async for patient in patient_collection.find({"parent": str(parent_user["_id"])}):
             patients.append(patient_helper(patient))
     else:
