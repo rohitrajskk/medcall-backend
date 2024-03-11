@@ -82,7 +82,7 @@ async def redoc_html():
     )
 
 
-SECRET_KEY = "b420ba2c7ca511ff976a51f38e146f2c9bbf8cfa5d0ff3e9097cee3bb5426772"
+SECRET_KEY = ""
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
