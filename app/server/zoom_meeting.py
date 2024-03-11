@@ -3,8 +3,8 @@ import datetime
 import json
 import requests
 
-api_key = '7XuGyn1fRbWtHXtYqencuQ'
-api_sec = 'G3Ou0nVwhP2DAZVAv6Ykn1NM0AMOKvu17ulG'
+api_key = ''
+api_sec = ''
 
 def generateToken():
     # generate JWT
