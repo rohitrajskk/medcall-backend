@@ -3,7 +3,7 @@ import datetime
 import json
 import requests
 
-token_brearer = '6d3b9853bc75946f24545771453a32f920624189c3ee62f526e1a69857821965'
+token_brearer = ''
 
 # TODO: Make a new user on zoom and change credentials
 url = 'https://api.daily.co/v1/rooms'
